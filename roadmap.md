@@ -1,39 +1,159 @@
-# Roadmap rápido (3 versiones)
+📦 v0.0.1 — Economic Core Spec (LOCKED)
+Rol
+Congelar la verdad económica del sistema.
+Alcance
+❌ Nada de código productivo
+❌ Nada de UI
+✔ Documentación fundacional
+Incluye
+Invariantes económicas formales
+Algoritmos core definidos (break-even, excedente, reparto)
+Modelo de datos mínimo
+Flowchart completo del motor
+Outputs certificables definidos
 
-## Versión 0.0.1 (MVP)
-- Definición de alcance y objetivos.
-- Arquitectura inicial y repositorio base.
-- Flujos críticos implementados.
-- Documentación mínima y criterios de aceptación.
+📌 Valor
+El sistema existe antes de ser programado.
+No hay ambigüedad futura.
 
-## Versión 0.2 (Beta)
-- Iteración sobre feedback del MVP.
-- Mejoras de UX/UI en flujos clave.
-- Pruebas básicas (unitarias y smoke).
-- Métricas iniciales y monitoreo.
+🔵 v0.0.2 — Core Engine Determinista
+Objetivo
 
-## Versión 1.0 (Release)
-- Estabilización y corrección de bugs críticos.
-- Seguridad y cumplimiento mínimos.
-- Documentación completa (usuario y técnica).
-- Plan de soporte y mantenimiento.
-```// filepath: roadmap.md
-# Roadmap rápido (3 versiones)
+Que EXCEDENTES calcule bien, sin DB ni API.
 
-## Versión 0.1 (MVP)
-- Definición de alcance y objetivos.
-- Arquitectura inicial y repositorio base.
-- Flujos críticos implementados.
-- Documentación mínima y criterios de aceptación.
+Core
+Implementación del motor económico puro
+Auditoría matemática automática
+Manejo de errores económicos (no técnicos)
+Tests de caja negra por algoritmo
+Infra
+Repo MERN estructurado
+Scripts de test
+CI básico local
 
-## Versión 0.2 (Beta)
-- Iteración sobre feedback del MVP.
-- Mejoras de UX/UI en flujos clave.
-- Pruebas básicas (unitarias y smoke).
-- Métricas iniciales y monitoreo.
+📌 Valor
+Si esto funciona, todo lo demás es envoltorio.
 
-## Versión 1.0 (Release)
-- Estabilización y corrección de bugs críticos.
-- Seguridad y cumplimiento mínimos.
-- Documentación completa (usuario y técnica).
-- Plan de soporte y mantenimiento.
+🟢 v0.0.3 — Persistence & API Surface
+Objetivo
+
+Hacer el motor usable por sistemas externos.
+
+Backend
+
+MongoDB setup
+
+Modelos Mongoose (Company, Employee, Asset, Period)
+
+Repositories desacoplados
+
+Servicios de orquestación
+
+API
+
+Endpoint /calculate
+
+Validación estricta de inputs
+
+Respuesta estructurada y auditada
+
+📌 Valor
+El core se vuelve consumible y reutilizable.
+
+🟡 v0.0.4 — Auth & System Access
+Objetivo
+
+Controlar quién calcula qué.
+
+Seguridad
+
+Autenticación básica (JWT)
+
+Roles iniciales (admin / empresa)
+
+Protección de endpoints
+
+Frontend (mínimo)
+
+Setup React
+
+Pantalla de Login
+
+Layout base (shell)
+
+📌 Valor
+Sistema cerrable, no un script suelto.
+
+🟠 v0.0.5 — Economic Visibility (UI Core)
+Objetivo
+
+Hacer visible el valor económico.
+
+UI
+
+Formulario de carga de datos
+
+Ejecución de cálculo
+
+Visualización:
+
+Punto de equilibrio
+
+Excedente total
+
+Capital vs Trabajo
+
+UX
+
+Estados claros (sin ganancia, error, éxito)
+
+Mensajes explicativos
+
+📌 Valor
+La empresa ve lo que antes estaba oculto.
+
+🔴 v0.0.6 — Labor Distribution & Transparency
+Objetivo
+
+Cerrar el loop con el trabajador.
+
+Core
+
+Algoritmo de asignación interna al personal
+
+Soporte de reglas configurables
+
+UI
+
+Tabla de distribución por empleado
+
+Trazabilidad del cálculo
+
+Vista “empleado”
+
+📌 Valor
+Motivación endógena real, no discursiva.
+
+🟣 v0.0.7 — Certification & Legal Artifact
+Objetivo
+
+Convertir cálculo en documento defendible.
+
+Certificación
+
+Generación de certificado (PDF/JSON)
+
+Hash verificable del período
+
+Historial de certificados
+
+Auditoría
+
+Inputs firmados
+
+Resultados congelados
+
+Reproducibilidad total
+
+📌 Valor
+EXCEDENTES pasa de app a infraestructura legal-tech.
