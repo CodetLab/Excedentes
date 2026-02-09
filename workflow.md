@@ -51,3 +51,38 @@ git checkout -b v0.x
 ```
 
 ## Cuando una rama es estable se hace un Pull Request y se elimina
+
+
+
+
+## Convención de Commits (simplificada)
+
+Formato:
+
+```
+type(scope): short description
+```
+
+### Tipos permitidos
+
+* **feat** → nueva funcionalidad
+* **chore** → setup, tooling, limpieza
+* **docs** → documentación
+* **fix** → corrección de bug
+* **refactor** — cambio interno sin alterar funcionalidad
+
+### Reglas
+
+* 1 commit = 1 idea técnica
+* Mensajes claros, sin épica
+* El valor se comunica en la release, no en el commit
+
+### Ejemplos
+
+```
+feat(audio): scan device storage for mp3 files
+feat(audio): read basic mp3 metadata
+feat(ui): render song list
+chore(project): adjust expo config
+fix(audio): handle missing metadata gracefully
+refactor(audio): simplify metadata parser
