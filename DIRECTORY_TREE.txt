@@ -1,0 +1,49 @@
+.
+├── DIRECTORY_TREE.txt
+├── README.md
+├── STRUCTURE.md
+├── docs
+│   ├── 01-core-economic-logic
+│   │   ├── README.md
+│   │   ├── business-rules.md
+│   │   ├── economic-invariants.md
+│   │   └── pricing-models.md
+│   ├── 02-invariants
+│   │   ├── README.md
+│   │   ├── system-invariants.md
+│   │   └── validation-rules.md
+│   ├── 03-algorithms
+│   │   ├── README.md
+│   │   ├── computational-logic.md
+│   │   └── flow-diagrams.md
+│   ├── 04-data-model
+│   │   ├── README.md
+│   │   ├── entities.md
+│   │   ├── relationships.md
+│   │   └── schemas.md
+│   ├── 05-legal-certification
+│   │   ├── README.md
+│   │   ├── audit-trail.md
+│   │   ├── certifications.md
+│   │   └── compliance.md
+│   ├── 06-diagrams
+│   │   ├── README.md
+│   │   ├── architecture
+│   │   │   └── README.md
+│   │   ├── data
+│   │   │   └── README.md
+│   │   └── flows
+│   │       └── README.md
+│   └── 07-research
+│       ├── README.md
+│       ├── market-analysis.md
+│       └── technical-investigations.md
+└── src
+    ├── api
+    │   └── README.md
+    ├── core
+    │   └── README.md
+    └── ui
+        └── README.md
+
+16 directories, 31 files
