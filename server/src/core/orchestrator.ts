@@ -10,8 +10,8 @@ import {
   allocateLaborSurplus,
   auditSystem,
   generateCertificate,
-} from "./steps";
-import { EngineInput, EngineResult } from "./types";
+} from "./steps.js";
+import { EngineInput, EngineResult } from "./types.js";
 
 export function runExcedentesEngine(input: EngineInput): EngineResult {
   const state = validateInputs(input);
@@ -31,7 +31,8 @@ export function runExcedentesEngine(input: EngineInput): EngineResult {
   const breakEven = calculateBreakEven(input);
   const variableCosts = inferVariableCosts(input);
   const distributableSurplus = calculateDistributableSurplus({
-    ...input,
+    Sales: input.Sales,
+    breakEven,
     variableCosts,
   });
 

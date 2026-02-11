@@ -46,7 +46,7 @@ const Sidebar = () => {
           <span>Reportes</span>
         </NavLink>
 
-        <NavLink to="/reportes" className="menu-item">
+        <NavLink to="/configuracion" className="menu-item">
           <FiSettings className="settings-icon" />
           <span>Configuracion</span>
         </NavLink>

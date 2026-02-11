@@ -1,6 +1,6 @@
 // core/steps.ts
 
-import { EmployeeAllocation, EngineInput } from "./types";
+import { EmployeeAllocation, EngineInput } from "./types.js";
 
 // ---------------------------
 // CORE STEPS (funciones puras, placeholders)
@@ -48,7 +48,7 @@ export function validateInputs(input: EngineInput): "VALID" | "INVALID" {
 }
 
 export function calculateBreakEven(input: EngineInput): number {
-  return input.FixedCapitalCosts + input.FixedLaborCosts + input.Amortization + input.Interests;
+  return input.FixedCapitalCosts + input.FixedLaborCosts;
 }
 
 export function inferVariableCosts(input: EngineInput): { VariableCosts: number; VariableCostRatio: number } {
@@ -63,14 +63,10 @@ export function inferVariableCosts(input: EngineInput): { VariableCosts: number;
 
 export function calculateDistributableSurplus(data: {
   Sales: number;
-  FixedCapitalCosts: number;
-  FixedLaborCosts: number;
-  Amortization: number;
-  Interests: number;
+  breakEven: number;
   variableCosts: { VariableCosts: number };
 }): number {
-  const totalFixed = data.FixedCapitalCosts + data.FixedLaborCosts;
-  return data.Sales - totalFixed - data.variableCosts.VariableCosts - data.Amortization - data.Interests;
+  return data.Sales - data.breakEven - data.variableCosts.VariableCosts;
 }
 
 export function calculateWeights(input: EngineInput): { weightCapital: number; weightLabor: number } {

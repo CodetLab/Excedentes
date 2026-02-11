@@ -1,4 +1,4 @@
-import { runExcedentesEngine } from "../src/core/orchestrator";
+import { runExcedentesEngine } from "../src/core/orchestrator.js";
 
 describe("EXCEDENTES Core Engine orchestrator", () => {
   const baseInput = {
@@ -106,15 +106,15 @@ describe("EXCEDENTES Core Engine orchestrator", () => {
     });
 
     it("invalid inputs: negative, missing, impossible combinations", async () => {
-      const inputs = [
+      const inputs: (typeof baseInput & { [key: string]: any })[] = [
         { ...baseInput, Sales: -1 },
         { ...baseInput, Profit: -10 },
-        { ...baseInput, Currency: null },
+        { ...baseInput, Currency: "" },
         { ...baseInput, Sales: 100, FixedCapitalCosts: 100, FixedLaborCosts: 100 },
       ];
 
       for (const input of inputs) {
-        const result = await runExcedentesEngine(input);
+        const result = await runExcedentesEngine(input as any);
         assertAuditAndCertificate(result, "FAIL");
       }
     });

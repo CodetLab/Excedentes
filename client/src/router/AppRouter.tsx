@@ -1,15 +1,16 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Auth from "../pages/Auth";
 import ProtectedRoute from "./ProtectedRoute";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../layout/MainLayout";
-import Dashboard from "../pages/Dashboard";
-import Calculadora from "../pages/Calculadora/Calculadora";
-import Configuracion from "../pages/Configuracion/Configuracion";
-import Costos from "../pages/Costos/Costos";
-import Productos from "../pages/Productos/Productos";
-import Reportes from "../pages/Reportes/Reportes";
-import Ventas from "../pages/Ventas/Ventas";
+
+import Auth from "@/pages/Auth";
+import Dashboard from "@/pages/Dashboard/Dashboard";
+import Calculadora from "@/pages/Calculadora/Calculadora";
+import Configuracion from "@/pages/Configuracion/Configuracion";
+import Costos from "@/pages/Costos/Costos";
+import Productos from "@/pages/Productos/Productos";
+import Reportes from "@/pages/Reportes/Reportes";
+import Ventas from "@/pages/Ventas/Ventas";
 
 function RootRedirect() {
   const { isAuthenticated, isLoading } = useAuth();
