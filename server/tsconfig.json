@@ -7,9 +7,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "noEmit": false,
     "skipLibCheck": true
   },
-  "include": ["src/core/**/*"],
-    "exclude": ["node_modules", "tests", "**/*.test.ts"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "tests", "**/*.test.ts", "src/core/**/*"]
 }

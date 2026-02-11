@@ -9,7 +9,7 @@ export type AuthResponse = {
   user: AuthUser;
 };
 
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const API_BASE = import.meta.env.VITE_API_URL;
 
 const request = async <T>(path: string, body: unknown): Promise<T> => {
   const response = await fetch(`${API_BASE}${path}`, {
