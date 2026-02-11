@@ -10,5 +10,6 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src/core/**/*", "tests/**/*"]
+  "include": ["src/core/**/*"],
+    "exclude": ["node_modules", "tests", "**/*.test.ts"]
 }

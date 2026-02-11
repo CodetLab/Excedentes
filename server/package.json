@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "dev": "nodemon src/app.js",
     "start": "node src/app.js",
     "test": "set NODE_OPTIONS=--experimental-vm-modules && jest"
