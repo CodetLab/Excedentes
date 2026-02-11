@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Login from "../auth/login";
-import Register from "../auth/register";
+import Login from "@/auth/login";
+import Register from "@/auth/register";
 import styles from "../styles/Auth.module.css";
 
 type AuthMode = "login" | "register";

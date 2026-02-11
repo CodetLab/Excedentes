@@ -86,3 +86,11 @@ feat(ui): render song list
 chore(project): adjust expo config
 fix(audio): handle missing metadata gracefully
 refactor(audio): simplify metadata parser
+```
+
+
+## Estandares:
+
+* **commit** → Estandarizamos commits con el fin de entender los avances y la entrega de calidad constante en caso de algun error, volvemos y revertimos commit
+
+* **clean architecture** → Estandarizamos nuestra estructura del back end alineandonos con la clean architecture y manejar mejor los servicios del backend buscando escalabilidad para implementar features rapidamente.

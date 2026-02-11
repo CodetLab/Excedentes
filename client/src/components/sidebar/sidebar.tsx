@@ -1,77 +1,69 @@
-import "./Sidebar.css";
 import { NavLink } from "react-router-dom";
-
-type MenuItem = {
-  name: string;
-  path: string;
-  icon: string;
-};
+import {
+  FiHome,
+  FiDollarSign,
+  FiBox,
+  FiTrendingUp,
+  FiFileText,
+  FiSettings,
+} from "react-icons/fi";
+import "./sidebar.css";
+import { FaCircleUser } from "react-icons/fa6";
 
 const Sidebar = () => {
-  const menuItems: MenuItem[] = [
-    {
-      name: "Dashboard",
-      path: "/",
-      icon: "fa-solid fa-chart-line",
-    },
-    {
-      name: "Costos",
-      path: "/costos",
-      icon: "fa-solid fa-wallet",
-    },
-    {
-      name: "Productos",
-      path: "/productos",
-      icon: "fa-solid fa-box",
-    },
-    {
-      name: "Ventas",
-      path: "/ventas",
-      icon: "fa-solid fa-arrow-trend-up",
-    },
-    {
-      name: "Reportes",
-      path: "/reportes",
-      icon: "fa-solid fa-file-lines",
-    },
-    {
-      name: "Configuración",
-      path: "/configuracion",
-      icon: "fa-solid fa-gear",
-    },
-  ];
-
   return (
     <aside className="sidebar">
-      {/* HEADER */}
+      {/* Logo */}
       <div className="sidebar-header">
-        <h2>AnalizaTuNegocio</h2>
+        <FiTrendingUp className="logo-icon" />
+        <span className="logo-text">Excedentes</span>
+        
       </div>
-
-      {/* MENU */}
+{/* Menú */}
       <nav className="sidebar-menu">
-        {menuItems.map((item) => (
-          <NavLink
-            key={item.name}
-            to={item.path}
-            className={({ isActive }) =>
-              `menu-item ${isActive ? "active" : ""}`
-            }
-          >
-            <i className={item.icon}></i>
-            <span>{item.name}</span>
-          </NavLink>
-        ))}
+        <NavLink to="/" end className="menu-item">
+          <FiHome />
+          <span>Dashboard</span>
+        </NavLink>
+
+        <NavLink to="/costos" className="menu-item">
+          <FiDollarSign />
+          <span>Costos</span>
+        </NavLink>
+
+        <NavLink to="/productos" className="menu-item">
+          <FiBox />
+          <span>Productos</span>
+        </NavLink>
+
+        <NavLink to="/ventas" className="menu-item">
+          <FiTrendingUp />
+          <span>Ventas</span>
+        </NavLink>
+
+        <NavLink to="/reportes" className="menu-item">
+          <FiFileText />
+          <span>Reportes</span>
+        </NavLink>
+
+        <NavLink to="/configuracion" className="menu-item">
+          <FiSettings className="settings-icon" />
+          <span>Configuracion</span>
+        </NavLink>
       </nav>
 
-      {/* FOOTER */}
+      
+      {/* Footer */}
       <div className="sidebar-footer">
+        <img
+          src="https://i.pravatar.cc/40"
+          alt="Usuario"
+          className="user-avatar"
+        />
         <div className="user-info">
-          <img src="https://i.pravatar.cc/40" alt="avatar" />
-          <div>
-            <strong>Juan Pérez</strong>
-            <p>Vicepresidente</p>
-          </div>
+          <span className="user-name">Juan Pérez</span>
+          <span className="user-role">Vicepresidente</span>
+          <FaCircleUser className="status-icon" />
         </div>
       </div>
     </aside>
