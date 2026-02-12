@@ -80,10 +80,6 @@ class CapitalService {
       throw new ValidationError(errors);
     }
     
-    const item = new Capital({
-      ...normalizedData,
-      tipo: tipoUpper,
-      userId,
     return capitalRepository.create({
       ...normalizedData,
       tipo: tipoUpper,
@@ -110,7 +106,11 @@ class CapitalService {
    * Eliminar item de capital
    */
   async delete(id) {
-    const item = await capitalRepository.d
+    const item = await capitalRepository.delete(id);
+    if (!item) {
+      throw new NotFoundError("Item de capital", id);
+    }
+    return { deleted: true, id };
   }
 
   /**
@@ -120,7 +120,7 @@ class CapitalService {
     const match = { tipo: { $in: TIPOS_VALIDOS } };
     if (userId) match.userId = userId;
     
-    const summary = await Capital.aggregate([
+    const summary = await capitalRepository.aggregate([
       { $match: match },
       {
         $group: {
@@ -128,7 +128,7 @@ class CapitalService {
           count: { $sum: 1 },
           totalValorUSD: { $sum: "$valorUSD" },
           totalCostoUSD: { $sum: "$costoUSD" },
-        }capitalRepository
+        }
       },
       { $sort: { _id: 1 } }
     ]);

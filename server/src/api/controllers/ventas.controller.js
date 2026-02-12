@@ -1,64 +1,36 @@
-import {
-  getVentas,
-  getVentaById,
-  createVenta,
-  updateVenta,
-  deleteVenta,
-} from "../../services/ventas.service.js";
-import response from "../../utils/responseHelper.js";
+import ventasService from "../../services/ventas.service.js";
+import { sendSuccess } from "../../utils/response.js";
+import { asyncHandler } from "../../middleware/errorHandler.js";
 
-export const getVentasController = async (req, res) => {
-  try {
-    const ventas = await getVentas();
-    return response.success(res, ventas);
-  } catch (error) {
-    return response.serverError(res, error);
-  }
-};
+export const getVentasController = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  const ventas = await ventasService.getAll(userId);
+  sendSuccess(res, ventas);
+});
 
-export const getVentaByIdController = async (req, res) => {
-  try {
-    const venta = await getVentaById(req.params.id);
-    if (!venta) return response.notFound(res, "Venta");
-    return response.success(res, venta);
-  } catch (error) {
-    return response.serverError(res, error);
-  }
-};
+export const getVentaByIdController = asyncHandler(async (req, res) => {
+  const venta = await ventasService.getById(req.params.id);
+  sendSuccess(res, venta);
+});
 
-export const createVentaController = async (req, res) => {
-  try {
-    const venta = await createVenta(req.body);
-    return response.created(res, venta);
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      const errors = Object.values(error.errors).map(e => e.message);
-      return response.validationError(res, errors);
-    }
-    return response.error(res, error.message);
-  }
-};
+export const createVentaController = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  const venta = await ventasService.create(req.body, userId);
+  sendSuccess(res, venta, 201);
+});
 
-export const updateVentaController = async (req, res) => {
-  try {
-    const venta = await updateVenta(req.params.id, req.body);
-    if (!venta) return response.notFound(res, "Venta");
-    return response.success(res, venta);
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      const errors = Object.values(error.errors).map(e => e.message);
-      return response.validationError(res, errors);
-    }
-    return response.error(res, error.message);
-  }
-};
+export const updateVentaController = asyncHandler(async (req, res) => {
+  const venta = await ventasService.update(req.params.id, req.body);
+  sendSuccess(res, venta);
+});
 
-export const deleteVentaController = async (req, res) => {
-  try {
-    const result = await deleteVenta(req.params.id);
-    if (!result) return response.notFound(res, "Venta");
-    return response.success(res, { deleted: true, id: req.params.id });
-  } catch (error) {
-    return response.serverError(res, error);
-  }
-};
+export const deleteVentaController = asyncHandler(async (req, res) => {
+  const result = await ventasService.delete(req.params.id);
+  sendSuccess(res, result);
+});
+
+export const getSummaryController = asyncHandler(async (req, res) => {
+  const userId = req.user?.id;
+  const summary = await ventasService.getSummary(userId);
+  sendSuccess(res, summary);
+});
