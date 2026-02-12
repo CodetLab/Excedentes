@@ -4,53 +4,51 @@ import {
   updateCosto as updateCostoService,
   deleteCosto as deleteCostoService,
 } from "../../services/costos.service.js";
-
-const handleControllerError = (res, error) => {
-  const status = error.statusCode || 500;
-  const payload = {
-    message: error.message || "Error interno del servidor",
-  };
-
-  if (error.details) {
-    payload.errors = error.details;
-  }
-
-  res.status(status).json(payload);
-};
+import response from "../../utils/responseHelper.js";
 
 export const getCostos = async (req, res) => {
   try {
     const costos = await getCostosService();
-    res.json(costos);
+    return response.success(res, costos);
   } catch (error) {
-    handleControllerError(res, error);
+    return response.serverError(res, error);
   }
 };
 
 export const createCosto = async (req, res) => {
   try {
     const nuevoCosto = await createCostoService(req.body);
-    res.status(201).json(nuevoCosto);
+    return response.created(res, nuevoCosto);
   } catch (error) {
-    handleControllerError(res, error);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return response.validationError(res, errors);
+    }
+    return response.error(res, error.message);
   }
 };
 
 export const updateCosto = async (req, res) => {
   try {
     const costo = await updateCostoService(req.params.id, req.body);
-    res.json(costo);
+    if (!costo) return response.notFound(res, "Costo");
+    return response.success(res, costo);
   } catch (error) {
-    handleControllerError(res, error);
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return response.validationError(res, errors);
+    }
+    return response.error(res, error.message);
   }
 };
 
 export const deleteCosto = async (req, res) => {
   try {
-    await deleteCostoService(req.params.id);
-    res.status(204).send();
+    const result = await deleteCostoService(req.params.id);
+    if (!result) return response.notFound(res, "Costo");
+    return response.success(res, { deleted: true, id: req.params.id });
   } catch (error) {
-    handleControllerError(res, error);
+    return response.serverError(res, error);
   }
 };
 

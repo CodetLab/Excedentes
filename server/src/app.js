@@ -10,6 +10,7 @@ import capitalRoutes from "./api/routes/capital.routes.js";
 import personalRoutes from "./api/routes/personal.routes.js";
 import ventasRoutes from "./api/routes/ventas.routes.js";
 import gananciasRoutes from "./api/routes/ganancias.routes.js";
+import extrasRoutes from "./api/routes/extras.routes.js";
 import excedentesRoutes from "./api/routes/excedentes.routes.js";
 import dashboardRoutes from "./api/routes/dashboard.routes.js";
 import calculateRoutes from "./api/routes/calculate.routes.js";
@@ -24,11 +25,11 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.json({ 
     status: "API running", 
-    version: "0.0.4",
+    version: "0.0.5",
     features: [
       "Data Integrity & Economic Safety",
       "Structured Error Handling",
-      "Normalized Responses",
+      "Normalized Responses {success, data, timestamp}",
       "Economic Validations"
     ],
     endpoints: [
@@ -38,8 +39,10 @@ app.get("/", (req, res) => {
       "/api/capital/:tipo",
       "/api/personal/propio",
       "/api/personal/terceros",
+      "/api/personal/summary",
       "/api/ventas",
       "/api/ganancias",
+      "/api/extras",
       "/api/excedentes/calc",
       "/api/dashboard/summary",
       "/api/calculate"
@@ -53,6 +56,7 @@ app.use("/api/capital", capitalRoutes);
 app.use("/api/personal", personalRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/ganancias", gananciasRoutes);
+app.use("/api/extras", extrasRoutes);
 app.use("/api/excedentes", excedentesRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/calculate", calculateRoutes);

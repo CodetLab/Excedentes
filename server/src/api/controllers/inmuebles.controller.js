@@ -1,55 +1,23 @@
-import{
-    getInmuebles, 
-    createInmuebles,
-    updateInmuebles, 
-    deleteInmuebles,
-} from "../../services/inmuebles.service.js";
+import inmueblesService from "../../services/inmuebles.service.js";
+import { sendSuccess } from "../../utils/response.js";
+import { asyncHandler } from "../../middleware/errorHandler.js";
 
-const handleControllerError = (res, error) => {
-    const status = error.statusCode || 500;
-    const payload = {
-        message: error.message || "Error interno del servidor",
-    };
+export const getInmueblesController = asyncHandler(async (req, res) => {
+  const inmuebles = await inmueblesService.getAll();
+  sendSuccess(res, inmuebles);
+});
 
-    if (error.details){
-        payload.errors = error.details;  
-    }
+export const createInmueblesController = asyncHandler(async (req, res) => {
+  const inmueble = await inmueblesService.create(req.body);
+  sendSuccess(res, inmueble, 201);
+});
 
-    res.status(status).json(payload); 
-};
+export const updateInmueblesController = asyncHandler(async (req, res) => {
+  const inmueble = await inmueblesService.update(req.params.id, req.body);
+  sendSuccess(res, inmueble);
+});
 
-export const getInmueblesController = async (req, res) => {
-    try {
-        const inmuebles = await getInmuebles();
-        res.json(inmuebles);
-    } catch (error) {
-        handleControllerError(res, error);
-    }
-};
-
-export const createInmueblesController = async (req, res) => {
-    try{
-        const nuevoInmueble = await createInmuebles(req.body);
-        res.status(201).json(nuevoInmueble); 
-    } catch (error) {
-        handleControllerError(res, error);
-    }
-}; 
-
-export const updateInmueblesController = async (req, res) => {
-    try{
-        const inmueble = await updateInmuebles(req.params.id, req.body);
-        res.json(inmueble);
-    } catch (error) {
-        handleControllerError(res, error);
-    }
-}
-
-export const deleteInmueblesController = async (req, res) => {
-    try{
-        const inmueble = await deleteInmuebles(req.params.id);
-        res.status(204).send();
-    } catch (error) {
-        handleControllerError(res, error);
-    }
-};
+export const deleteInmueblesController = asyncHandler(async (req, res) => {
+  const result = await inmueblesService.delete(req.params.id);
+  sendSuccess(res, result);
+});

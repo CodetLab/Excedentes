@@ -1,53 +1,27 @@
 import { Router } from "express";
-import Capital from "../../models/CapitalModel.js";
+import * as gananciasController from "../controllers/ganancias.controller.js";
 
 const router = Router();
 
-// GET /api/ganancias - Obtener datos de ganancias
-router.get("/", async (req, res) => {
-  try {
-    const filter = { tipo: "GANANCIAS" };
-    if (req.user?.id) filter.userId = req.user.id;
-    
-    const items = await Capital.find(filter).sort({ createdAt: -1 });
-    
-    // Si hay un registro, devolver el primero; sino devolver estructura vacía
-    if (items.length > 0) {
-      res.json(items[0]);
-    } else {
-      res.json({
-        tipo: "GANANCIAS",
-        mes: new Date().getMonth() + 1,
-        anio: new Date().getFullYear(),
-        totalGanancias: 0,
-        desglose: {
-          gananciaCapital: 0,
-          gananciaPersonal: 0
-        },
-        notas: ""
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// GET /api/ganancias - Obtener ganancias del usuario
+router.get("/", gananciasController.get);
 
-// POST /api/ganancias - Crear o actualizar
-router.post("/", async (req, res) => {
-  try {
-    const userId = req.user?.id || req.body.userId;
-    
-    // Buscar si ya existe un registro de ganancias para este usuario
-    const existing = await Capital.findOne({ 
-      tipo: "GANANCIAS",
-      userId 
-    });
+// GET /api/ganancias/total - Obtener total de ganancias
+router.get("/total", gananciasController.getTotal);
+
+// POST /api/ganancias - Crear o actualizar ganancias
+router.post("/", gananciasController.createOrUpdate);
+
+// DELETE /api/ganancias - Eliminar ganancias
+router.delete("/", gananciasController.remove);
+
+export default router;
     
     if (existing) {
       // Actualizar existente
       Object.assign(existing, req.body, { updatedAt: new Date() });
       await existing.save();
-      return res.json(existing);
+      return response.success(res, existing);
     }
     
     // Crear nuevo
@@ -58,16 +32,23 @@ router.post("/", async (req, res) => {
       nombre: "Ganancias",
     });
     await item.save();
-    res.status(201).json(item);
+    return response.created(res, item);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return response.validationError(res, errors);
+    }
+    return response.error(res, error.message);
   }
 });
 
 // PUT /api/ganancias - Actualizar
 router.put("/", async (req, res) => {
   try {
-    const userId = req.user?.id || req.body.userId;
+    const userId = getOrCreateUserId(req, req.body);
+    if (!userId) {
+      return response.error(res, "userId es requerido");
+    }
     
     let item = await Capital.findOne({ 
       tipo: "GANANCIAS",
@@ -87,9 +68,13 @@ router.put("/", async (req, res) => {
     }
     
     await item.save();
-    res.json(item);
+    return response.success(res, item);
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    if (error.name === "ValidationError") {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return response.validationError(res, errors);
+    }
+    return response.error(res, error.message);
   }
 });
 

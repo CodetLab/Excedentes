@@ -56,7 +56,7 @@ Blindar la consistencia económica.
   - Períodos duplicados prevenidos
 - Middleware global de errores
 - Logging estructurado
-- Tests automáticos de API (supertest)
+- Tests automáticos de API (jest)
 - Normalización de respuestas de error
 
 ## Criterio de cierre
