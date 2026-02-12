@@ -5,6 +5,7 @@ import Input from "../../components/Input";
 import calculationService from "../../services/calculation.service";
 import type { CalculateInput, CalculateResult } from "../../services/apiTypes";
 import { getEconomicStatus } from "../../services/apiTypes";
+import { safeCurrency, safeDate, safePercentDirect } from "../../utils/formatters";
 import "./Dashboard.css";
 
 const initialFormData: CalculateInput = {
@@ -184,7 +185,7 @@ const Dashboard = () => {
                   <div className="kpi-content">
                     <span className="kpi-label">Punto de Equilibrio</span>
                     <span className="kpi-value">
-                      ${result.breakEven.toLocaleString()}
+                      {safeCurrency(result.breakEven)}
                     </span>
                   </div>
                 </Card>
@@ -192,7 +193,7 @@ const Dashboard = () => {
                   <div className="kpi-content">
                     <span className="kpi-label">Ingresos Totales</span>
                     <span className="kpi-value">
-                      ${result.totalRevenue.toLocaleString()}
+                      {safeCurrency(result.totalRevenue)}
                     </span>
                   </div>
                 </Card>
@@ -200,7 +201,7 @@ const Dashboard = () => {
                   <div className="kpi-content">
                     <span className="kpi-label">Excedente</span>
                     <span className={`kpi-value ${result.surplus >= 0 ? "positive" : "negative"}`}>
-                      ${result.surplus.toLocaleString()}
+                      {safeCurrency(result.surplus)}
                     </span>
                   </div>
                 </Card>
@@ -220,9 +221,9 @@ const Dashboard = () => {
                     </div>
                     <div className="distribution-info">
                       <span>Retorno Capital</span>
-                      <span>${result.distribution.capitalReturn.toLocaleString()}</span>
+                      <span>{safeCurrency(result.distribution.capitalReturn)}</span>
                       <span className="distribution-percent">
-                        ({(result.distribution.weightCapital * 100).toFixed(1)}%)
+                        ({safePercentDirect(result.distribution.weightCapital * 100)})
                       </span>
                     </div>
                   </div>
@@ -237,9 +238,9 @@ const Dashboard = () => {
                     </div>
                     <div className="distribution-info">
                       <span>Pool Trabajo</span>
-                      <span>${result.distribution.laborSurplusPool.toLocaleString()}</span>
+                      <span>{safeCurrency(result.distribution.laborSurplusPool)}</span>
                       <span className="distribution-percent">
-                        ({(result.distribution.weightLabor * 100).toFixed(1)}%)
+                        ({safePercentDirect(result.distribution.weightLabor * 100)})
                       </span>
                     </div>
                   </div>
@@ -257,7 +258,7 @@ const Dashboard = () => {
                   </div>
                   <div className="audit-row">
                     <span>Calculado:</span>
-                    <span>{new Date(result.auditTrail.calculatedAt).toLocaleString()}</span>
+                    <span>{safeDate(result.auditTrail.calculatedAt)}</span>
                   </div>
                   <div className="audit-row">
                     <span>Período:</span>

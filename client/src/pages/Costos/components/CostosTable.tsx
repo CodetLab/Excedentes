@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import Table from "@/components/Table";
+import { safeNumber } from "@/utils/formatters";
 import type { Costo } from "../types";
 
 type CostosTableProps = {
@@ -29,7 +30,7 @@ const CostosTable = ({ items, onEdit, onDelete }: CostosTableProps) => {
           <tr key={item._id}>
             <td>{item.nombre}</td>
             <td>{item.etiqueta}</td>
-            <td className="numeric">{item.monto.toLocaleString("es-AR")}</td>
+            <td className="numeric">{safeNumber(item.monto)}</td>
             <td>
               <span className={item.tipo === "FIJO" ? "badge badge-primary" : "badge"}>
                 {item.tipo}

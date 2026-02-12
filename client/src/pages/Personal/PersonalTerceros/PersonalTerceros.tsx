@@ -7,6 +7,8 @@ import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import DataTable from "../../../components/DataTable";
 import Modal from "../../../components/Modal";
+import TableErrorBoundary from "../../../components/TableErrorBoundary";
+import { safeCurrency } from "../../../utils/formatters";
 import "../../../styles/planillas.css";
 
 const TIPOS_CONTRATO = [
@@ -50,16 +52,18 @@ const PersonalTerceros = () => {
       <div className="summary-cards">
         <Card className="summary-card"><span className="summary-label">Servicios Activos</span><span className="summary-value">{activos.length}</span></Card>
         <Card className="summary-card"><span className="summary-label">Total Personas</span><span className="summary-value">{totals.personas}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Costo Mensual</span><span className="summary-value">${totals.costo.toLocaleString()}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Costo Mensual</span><span className="summary-value">{safeCurrency(totals.costo)}</span></Card>
       </div>
       <Card>
         {loading ? <div className="loading">Cargando...</div> : items.length === 0 ? <div className="empty-state"><p>Sin servicios</p><Button onClick={() => setIsModalOpen(true)}>Agregar</Button></div> : (
-          <DataTable columns={[
-            { key: "proveedor", label: "Proveedor" }, { key: "servicio", label: "Servicio" },
-            { key: "cantidadPersonas", label: "Personas", align: "right" }, { key: "tipoContrato", label: "Contrato" },
-            { key: "costoMensualUSD", label: "Costo Mensual", align: "right", format: v => `$${v.toLocaleString()}` },
-            { key: "activo", label: "Estado", format: v => v ? "Activo" : "Inactivo" },
-          ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          <TableErrorBoundary>
+            <DataTable columns={[
+              { key: "proveedor", label: "Proveedor" }, { key: "servicio", label: "Servicio" },
+              { key: "cantidadPersonas", label: "Personas", align: "right" }, { key: "tipoContrato", label: "Contrato" },
+              { key: "costoMensualUSD", label: "Costo Mensual", align: "right", render: v => safeCurrency(v) },
+              { key: "activo", label: "Estado", render: v => v ? "Activo" : "Inactivo" },
+            ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          </TableErrorBoundary>
         )}
       </Card>
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingId ? "Editar" : "Nuevo Servicio"}>

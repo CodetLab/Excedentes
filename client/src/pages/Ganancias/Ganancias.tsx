@@ -5,6 +5,7 @@ import type { GananciasData } from "../../types/planillas";
 import Card from "../../components/Card";
 import Button from "../../components/Button";
 import Input from "../../components/Input";
+import { safeCurrency } from "../../utils/formatters";
 import "../../styles/planillas.css";
 
 const MESES = [
@@ -79,20 +80,20 @@ const Ganancias = () => {
       ) : (
         <>
           <div className="summary-cards">
-            <Card className="summary-card highlight"><span className="summary-label">Ganancia Total</span><span className="summary-value large">${data?.gananciaUSD?.toLocaleString() || 0}</span></Card>
+            <Card className="summary-card highlight"><span className="summary-label">Ganancia Total</span><span className="summary-value large">{safeCurrency(data?.gananciaUSD)}</span></Card>
             <Card className="summary-card"><span className="summary-label">Período</span><span className="summary-value">{data?.periodo || "No definido"}</span></Card>
           </div>
-          {data && (
+          {data?.desglose && (
             <Card><h3>Desglose por Tipo</h3>
               <div className="desglose-grid">
                 <div className="desglose-card capital">
                   <span className="desglose-label">Ganancia por Capital</span>
-                  <span className="desglose-value">${data.desglose.gananciaCapital.toLocaleString()}</span>
+                  <span className="desglose-value">{safeCurrency(data.desglose.gananciaCapital)}</span>
                   <span className="desglose-desc">Retorno del capital invertido</span>
                 </div>
                 <div className="desglose-card personal">
                   <span className="desglose-label">Ganancia por Trabajo Personal</span>
-                  <span className="desglose-value">${data.desglose.gananciaPersonal.toLocaleString()}</span>
+                  <span className="desglose-value">{safeCurrency(data.desglose.gananciaPersonal)}</span>
                   <span className="desglose-desc">Retribución por trabajo del productor</span>
                 </div>
               </div>

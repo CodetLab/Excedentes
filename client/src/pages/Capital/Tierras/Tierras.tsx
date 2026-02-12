@@ -9,6 +9,8 @@ import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import DataTable from "../../../components/DataTable";
 import Modal from "../../../components/Modal";
+import TableErrorBoundary from "../../../components/TableErrorBoundary";
+import { safeNumber, safeCurrency } from "../../../utils/formatters";
 import "./Tierras.css";
 
 const TIPOS_USO = [
@@ -135,15 +137,15 @@ const Tierras = () => {
       <div className="summary-cards">
         <Card className="summary-card">
           <span className="summary-label">Total Hectáreas</span>
-          <span className="summary-value">{totals.superficie.toLocaleString()} ha</span>
+          <span className="summary-value">{safeNumber(totals.superficie)} ha</span>
         </Card>
         <Card className="summary-card">
           <span className="summary-label">Valor Total</span>
-          <span className="summary-value">${totals.valor.toLocaleString()}</span>
+          <span className="summary-value">{safeCurrency(totals.valor)}</span>
         </Card>
         <Card className="summary-card">
           <span className="summary-label">Costo Anual</span>
-          <span className="summary-value">${totals.costoAnual.toLocaleString()}</span>
+          <span className="summary-value">{safeCurrency(totals.costoAnual)}</span>
         </Card>
       </div>
 
@@ -157,19 +159,21 @@ const Tierras = () => {
             <Button onClick={() => setIsModalOpen(true)}>Agregar primera tierra</Button>
           </div>
         ) : (
-          <DataTable
-            columns={[
-              { key: "nombre", label: "Nombre" },
-              { key: "ubicacion", label: "Ubicación" },
-              { key: "superficieHa", label: "Hectáreas", align: "right" },
-              { key: "valorUSD", label: "Valor (USD)", align: "right", format: (v) => `$${v.toLocaleString()}` },
-              { key: "costoMantenimientoAnual", label: "Costo Anual", align: "right", format: (v) => `$${v.toLocaleString()}` },
-              { key: "tipoUso", label: "Tipo Uso" },
-            ]}
-            data={items}
-            onEdit={handleEdit}
-            onDelete={(item) => handleDelete(item.id!)}
-          />
+          <TableErrorBoundary>
+            <DataTable
+              columns={[
+                { key: "nombre", label: "Nombre" },
+                { key: "ubicacion", label: "Ubicación" },
+                { key: "superficieHa", label: "Hectáreas", align: "right", render: v => safeNumber(v) },
+                { key: "valorUSD", label: "Valor (USD)", align: "right", render: v => safeCurrency(v) },
+                { key: "costoMantenimientoAnual", label: "Costo Anual", align: "right", render: v => safeCurrency(v) },
+                { key: "tipoUso", label: "Tipo Uso" },
+              ]}
+              data={items}
+              onEdit={handleEdit}
+              onDelete={(item) => handleDelete(item.id!)}
+            />
+          </TableErrorBoundary>
         )}
       </Card>
 

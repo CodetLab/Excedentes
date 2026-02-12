@@ -7,6 +7,8 @@ import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import DataTable from "../../../components/DataTable";
 import Modal from "../../../components/Modal";
+import TableErrorBoundary from "../../../components/TableErrorBoundary";
+import { safeCurrency } from "../../../utils/formatters";
 import "../../../styles/planillas.css";
 
 const CATEGORIAS = [
@@ -48,16 +50,18 @@ const Herramientas = () => {
       {error && <div className="error-banner">{error}</div>}
       <div className="summary-cards">
         <Card className="summary-card"><span className="summary-label">Items</span><span className="summary-value">{items.length}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Valor Total</span><span className="summary-value">${totals.valor.toLocaleString()}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Deprec. Anual</span><span className="summary-value">${totals.deprec.toLocaleString()}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Valor Total</span><span className="summary-value">{safeCurrency(totals.valor)}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Deprec. Anual</span><span className="summary-value">{safeCurrency(totals.deprec)}</span></Card>
       </div>
       <Card>
         {loading ? <div className="loading">Cargando...</div> : items.length === 0 ? <div className="empty-state"><p>Sin herramientas</p><Button onClick={() => setIsModalOpen(true)}>Agregar</Button></div> : (
-          <DataTable columns={[
-            { key: "nombre", label: "Nombre" }, { key: "categoria", label: "Categoría" },
-            { key: "cantidad", label: "Cant.", align: "right" }, { key: "valorTotalUSD", label: "Valor", align: "right", format: v => `$${v.toLocaleString()}` },
-            { key: "estado", label: "Estado" },
-          ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          <TableErrorBoundary>
+            <DataTable columns={[
+              { key: "nombre", label: "Nombre" }, { key: "categoria", label: "Categoría" },
+              { key: "cantidad", label: "Cant.", align: "right" }, { key: "valorTotalUSD", label: "Valor", align: "right", render: v => safeCurrency(v) },
+              { key: "estado", label: "Estado" },
+            ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          </TableErrorBoundary>
         )}
       </Card>
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingId ? "Editar" : "Nueva Herramienta"}>

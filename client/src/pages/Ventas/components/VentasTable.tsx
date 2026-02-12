@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import Table from "@/components/Table";
+import { safeNumber } from "@/utils/formatters";
 import type { Venta } from "../types";
 
 type VentasTableProps = {
@@ -36,7 +37,7 @@ const VentasTable = ({ items, onEdit, onDelete }: VentasTableProps) => {
           <tr key={item._id}>
             <td>{formatDate(item.date)}</td>
             <td className="numeric">{item.products?.length ?? 0}</td>
-            <td className="numeric">{item.totalAmount.toLocaleString("es-AR")}</td>
+            <td className="numeric">{safeNumber(item.totalAmount)}</td>
             <td>
               <div className="row-actions">
                 <Button type="button" variant="ghost" onClick={() => onEdit(item)}>

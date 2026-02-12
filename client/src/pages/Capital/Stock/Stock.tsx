@@ -7,6 +7,8 @@ import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import DataTable from "../../../components/DataTable";
 import Modal from "../../../components/Modal";
+import TableErrorBoundary from "../../../components/TableErrorBoundary";
+import { safeCurrency } from "../../../utils/formatters";
 import "../../../styles/planillas.css";
 
 const CATEGORIAS = [
@@ -51,16 +53,18 @@ const Stock = () => {
       {error && <div className="error-banner">{error}</div>}
       <div className="summary-cards">
         <Card className="summary-card"><span className="summary-label">Items</span><span className="summary-value">{items.length}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Valor Stock</span><span className="summary-value">${totals.valor.toLocaleString()}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Valor Stock</span><span className="summary-value">{safeCurrency(totals.valor)}</span></Card>
         <Card className="summary-card"><span className="summary-label">Stock Bajo</span><span className="summary-value" style={{ color: totals.bajo > 0 ? "#ef4444" : "#22c55e" }}>{totals.bajo}</span></Card>
       </div>
       <Card>
         {loading ? <div className="loading">Cargando...</div> : items.length === 0 ? <div className="empty-state"><p>Sin stock</p><Button onClick={() => setIsModalOpen(true)}>Agregar</Button></div> : (
-          <DataTable columns={[
-            { key: "nombre", label: "Nombre" }, { key: "categoria", label: "Categoría" },
-            { key: "cantidadActual", label: "Cantidad", align: "right" }, { key: "unidad", label: "Unidad" },
-            { key: "valorTotalUSD", label: "Valor", align: "right", format: v => `$${v.toLocaleString()}` },
-          ]} data={items.map(i => ({ ...i, _rowClass: i.cantidadActual <= i.stockMinimo ? "low-stock" : "" }))} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          <TableErrorBoundary>
+            <DataTable columns={[
+              { key: "nombre", label: "Nombre" }, { key: "categoria", label: "Categoría" },
+              { key: "cantidadActual", label: "Cantidad", align: "right" }, { key: "unidad", label: "Unidad" },
+              { key: "valorTotalUSD", label: "Valor", align: "right", render: v => safeCurrency(v) },
+            ]} data={items.map(i => ({ ...i, _rowClass: i.cantidadActual <= i.stockMinimo ? "low-stock" : "" }))} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          </TableErrorBoundary>
         )}
       </Card>
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingId ? "Editar" : "Nuevo Stock"}>

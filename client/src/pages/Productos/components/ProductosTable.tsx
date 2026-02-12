@@ -1,5 +1,6 @@
 import Button from "@/components/Button";
 import Table from "@/components/Table";
+import { safeNumber } from "@/utils/formatters";
 import type { Producto } from "../types";
 
 type ProductosTableProps = {
@@ -28,8 +29,8 @@ const ProductosTable = ({ items, onEdit, onDelete }: ProductosTableProps) => {
         {items.map((item) => (
           <tr key={item._id}>
             <td>{item.name}</td>
-            <td className="numeric">{item.price.toLocaleString("es-AR")}</td>
-            <td className="numeric">{item.cost.toLocaleString("es-AR")}</td>
+            <td className="numeric">{safeNumber(item.price)}</td>
+            <td className="numeric">{safeNumber(item.cost)}</td>
             <td className="numeric">{item.stock}</td>
             <td>
               <div className="row-actions">

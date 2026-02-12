@@ -7,6 +7,8 @@ import Button from "../../../components/Button";
 import Input from "../../../components/Input";
 import DataTable from "../../../components/DataTable";
 import Modal from "../../../components/Modal";
+import TableErrorBoundary from "../../../components/TableErrorBoundary";
+import { safeNumber, safeCurrency } from "../../../utils/formatters";
 import "../../../styles/planillas.css";
 
 const TIPOS = [
@@ -92,26 +94,28 @@ const Inmuebles = () => {
       </header>
       {error && <div className="error-banner">{error}</div>}
       <div className="summary-cards">
-        <Card className="summary-card"><span className="summary-label">Total M²</span><span className="summary-value">{totals.m2.toLocaleString()}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Valor Total</span><span className="summary-value">${totals.valor.toLocaleString()}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Costo Anual</span><span className="summary-value">${totals.costoAnual.toLocaleString()}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Total M²</span><span className="summary-value">{safeNumber(totals.m2)}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Valor Total</span><span className="summary-value">{safeCurrency(totals.valor)}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Costo Anual</span><span className="summary-value">{safeCurrency(totals.costoAnual)}</span></Card>
       </div>
       <Card>
         {loading ? <div className="loading">Cargando...</div> : items.length === 0 ? (
           <div className="empty-state"><p>Sin inmuebles</p><Button onClick={() => setIsModalOpen(true)}>Agregar</Button></div>
         ) : (
-          <DataTable
-            columns={[
-              { key: "nombre", label: "Nombre" },
-              { key: "tipo", label: "Tipo" },
-              { key: "superficieM2", label: "M²", align: "right" },
-              { key: "valorUSD", label: "Valor", align: "right", format: v => `$${v.toLocaleString()}` },
-              { key: "depreciacionAnual", label: "Deprec. Anual", align: "right", format: v => `$${v.toLocaleString()}` },
-            ]}
-            data={items}
-            onEdit={handleEdit}
-            onDelete={i => handleDelete(i.id!)}
-          />
+          <TableErrorBoundary>
+            <DataTable
+              columns={[
+                { key: "nombre", label: "Nombre" },
+                { key: "tipo", label: "Tipo" },
+                { key: "superficieM2", label: "M²", align: "right", render: v => safeNumber(v) },
+                { key: "valorUSD", label: "Valor", align: "right", render: v => safeCurrency(v) },
+                { key: "depreciacionAnual", label: "Deprec. Anual", align: "right", render: v => safeCurrency(v) },
+              ]}
+              data={items}
+              onEdit={handleEdit}
+              onDelete={i => handleDelete(i.id!)}
+            />
+          </TableErrorBoundary>
         )}
       </Card>
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingId ? "Editar" : "Nuevo Inmueble"}>

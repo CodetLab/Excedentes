@@ -1,12 +1,15 @@
 import "./styles/App.css";
 import AppRouter from "./router/AppRouter";
 import { AuthProvider } from "./context/AuthContext";
+import GlobalErrorBoundary from "./components/GlobalErrorBoundary";
 
 function App() {
   return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
+    <GlobalErrorBoundary>
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </GlobalErrorBoundary>
   );
 }
 

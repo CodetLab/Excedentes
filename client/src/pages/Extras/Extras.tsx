@@ -7,6 +7,8 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 import DataTable from "../../components/DataTable";
 import Modal from "../../components/Modal";
+import TableErrorBoundary from "../../components/TableErrorBoundary";
+import { safeCurrency } from "../../utils/formatters";
 import "../../styles/planillas.css";
 
 const CATEGORIAS = [
@@ -53,7 +55,29 @@ const Extras = () => {
     }
     setForm(newForm);
   };
-  const handleSubmit = async (e: React.FormEvent) => { e.preventDefault(); setSaving(true); try { if (editingId) await extrasService.update(editingId, form); else await extrasService.create(form); await loadData(); closeModal(); } catch (e) { setError(e instanceof Error ? e.message : "Error"); } finally { setSaving(false); } };
+  const handleSubmit = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    setSaving(true); 
+    try { 
+      // Mapear concepto → nombre para compatibilidad con backend
+      const payload = {
+        ...form,
+        nombre: form.concepto, // Backend espera "nombre"
+      };
+      
+      if (editingId) {
+        await extrasService.update(editingId, payload);
+      } else {
+        await extrasService.create(payload);
+      }
+      await loadData(); 
+      closeModal(); 
+    } catch (e) { 
+      setError(e instanceof Error ? e.message : "Error"); 
+    } finally { 
+      setSaving(false); 
+    } 
+  };
   const handleEdit = (item: ExtrasItem) => { setEditingId(item.id || null); setForm({ ...item }); setIsModalOpen(true); };
   const handleDelete = async (id: string) => { if (confirm("¿Eliminar?")) { await extrasService.remove(id); await loadData(); } };
   const closeModal = () => { setIsModalOpen(false); setEditingId(null); setForm(initialForm); };
@@ -68,19 +92,21 @@ const Extras = () => {
       {error && <div className="error-banner">{error}</div>}
       <div className="summary-cards">
         <Card className="summary-card"><span className="summary-label">Total Items</span><span className="summary-value">{items.length}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Costos Fijos/Mes</span><span className="summary-value">${totalFijosMes.toLocaleString()}</span></Card>
-        <Card className="summary-card"><span className="summary-label">Costos Variables/Mes</span><span className="summary-value">${totalVariablesMes.toLocaleString()}</span></Card>
-        <Card className="summary-card highlight"><span className="summary-label">Total Mensual</span><span className="summary-value">${(totalFijosMes + totalVariablesMes).toLocaleString()}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Costos Fijos/Mes</span><span className="summary-value">{safeCurrency(totalFijosMes)}</span></Card>
+        <Card className="summary-card"><span className="summary-label">Costos Variables/Mes</span><span className="summary-value">{safeCurrency(totalVariablesMes)}</span></Card>
+        <Card className="summary-card highlight"><span className="summary-label">Total Mensual</span><span className="summary-value">{safeCurrency(totalFijosMes + totalVariablesMes)}</span></Card>
       </div>
       <Card>
         {loading ? <div className="loading">Cargando...</div> : items.length === 0 ? <div className="empty-state"><p>Sin gastos extra</p><Button onClick={() => setIsModalOpen(true)}>Agregar</Button></div> : (
-          <DataTable columns={[
-            { key: "concepto", label: "Concepto" }, { key: "categoria", label: "Categoría" },
-            { key: "montoUSD", label: "Monto", align: "right", format: v => `$${v.toLocaleString()}` },
-            { key: "frecuencia", label: "Frecuencia" },
-            { key: "montoMensualUSD", label: "Mensual", align: "right", format: v => `$${v.toLocaleString()}` },
-            { key: "esCostoFijo", label: "Tipo", format: v => v ? "Fijo" : "Variable" },
-          ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          <TableErrorBoundary>
+            <DataTable columns={[
+              { key: "concepto", label: "Concepto" }, { key: "categoria", label: "Categoría" },
+              { key: "montoUSD", label: "Monto", align: "right", render: v => safeCurrency(v) },
+              { key: "frecuencia", label: "Frecuencia" },
+              { key: "montoMensualUSD", label: "Mensual", align: "right", render: v => safeCurrency(v) },
+              { key: "esCostoFijo", label: "Tipo", render: v => v ? "Fijo" : "Variable" },
+            ]} data={items} onEdit={handleEdit} onDelete={i => handleDelete(i.id!)} />
+          </TableErrorBoundary>
         )}
       </Card>
       <Modal isOpen={isModalOpen} onClose={closeModal} title={editingId ? "Editar" : "Nuevo Gasto"}>

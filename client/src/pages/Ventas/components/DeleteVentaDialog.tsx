@@ -1,4 +1,5 @@
 import ConfirmDialog from "@/components/ConfirmDialog";
+import { safeCurrency } from "@/utils/formatters";
 import type { Venta } from "../types";
 
 type DeleteVentaDialogProps = {
@@ -16,7 +17,7 @@ const DeleteVentaDialog = ({ item, isSubmitting, onConfirm, onCancel }: DeleteVe
       description={
         item ? (
           <span>
-            Esto eliminara la venta de <strong>{item.totalAmount.toLocaleString("es-AR")}</strong>.
+            Esto eliminara la venta de <strong>{safeCurrency(item.totalAmount)}</strong>.
             Esta accion no se puede deshacer.
           </span>
         ) : undefined
