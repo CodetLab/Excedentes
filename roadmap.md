@@ -1,159 +1,263 @@
-📦 v0.0.1 — Economic Core Spec (LOCKED)
-Rol
-Congelar la verdad económica del sistema.
-Alcance
-❌ Nada de código productivo
-❌ Nada de UI
-✔ Documentación fundacional
-Incluye
-Invariantes económicas formales
-Algoritmos core definidos (break-even, excedente, reparto)
-Modelo de datos mínimo
-Flowchart completo del motor
-Outputs certificables definidos
+# 🧭 EXCEDENTES — Roadmap Técnico v0.0.3 → v1.0.0
 
-📌 Valor
-El sistema existe antes de ser programado.
-No hay ambigüedad futura.
+Regla base:
+Cada versión debe mejorar ejecución, claridad o escalabilidad.
+Si no lo hace → no se lanza.
 
-🔵 v0.0.2 — Core Engine Determinista
-Objetivo
+---
 
-Que EXCEDENTES calcule bien, sin DB ni API.
+# 🟢 v0.0.3 — Persistence & API Surface (ACTUAL)
 
-Core
-Implementación del motor económico puro
-Auditoría matemática automática
-Manejo de errores económicos (no técnicos)
-Tests de caja negra por algoritmo
-Infra
-Repo MERN estructurado
-Scripts de test
-CI básico local
+🎯 Objetivo  
+Hacer que el Core determinista sea consumible externamente.
 
-📌 Valor
-Si esto funciona, todo lo demás es envoltorio.
+## Backend
 
-🟢 v0.0.3 — Persistence & API Surface
-Objetivo
+- MongoDB configurado correctamente
+- Modelos:
+  - Company
+  - Employee
+  - Asset
+  - Period
+- Repositories desacoplados del motor
+- Servicio `EconomicCalculationService`
+- Endpoint:
+  - `POST /calculate`
+- Validación estricta de inputs (schema validation)
+- Respuesta estructurada:
+  - breakEven
+  - totalRevenue
+  - totalCost
+  - surplus
+  - distribution
+  - auditTrail
 
-Hacer el motor usable por sistemas externos.
+## Criterio de cierre
 
-Backend
+- El mismo input produce siempre el mismo output
+- El cálculo puede ejecutarse sin UI
+- Test manual reproducible vía Postman/Insomnia
 
-MongoDB setup
+📦 Valor  
+El motor ya es infraestructura utilizable.
 
-Modelos Mongoose (Company, Employee, Asset, Period)
+---
 
-Repositories desacoplados
+# 🟡 v0.0.4 — Data Integrity & Economic Safety
 
-Servicios de orquestación
+🎯 Objetivo  
+Blindar la consistencia económica.
 
-API
+## Incluye
 
-Endpoint /calculate
+- Validaciones económicas (no técnicas):
+  - Costos negativos prohibidos
+  - Revenue inválido bloqueado
+  - Períodos duplicados prevenidos
+- Middleware global de errores
+- Logging estructurado
+- Tests automáticos de API (supertest)
+- Normalización de respuestas de error
 
-Validación estricta de inputs
+## Criterio de cierre
 
-Respuesta estructurada y auditada
+- No se puede romper el sistema con inputs absurdos
+- Errores económicos claros y semánticos
 
-📌 Valor
-El core se vuelve consumible y reutilizable.
+📦 Valor  
+Confianza matemática.
 
-🟡 v0.0.4 — Auth & System Access
-Objetivo
+---
 
-Controlar quién calcula qué.
+# 🟠 v0.0.5 — Auth & Multi-Tenant Isolation
 
-Seguridad
+🎯 Objetivo  
+Separar empresas y asegurar datos.
 
-Autenticación básica (JWT)
+## Incluye
 
-Roles iniciales (admin / empresa)
+- JWT auth
+- Roles:
+  - admin
+  - company
+- Protección de endpoints
+- Relación Company → Periods
+- Filtro automático por companyId
 
-Protección de endpoints
+## Criterio de cierre
 
-Frontend (mínimo)
+- Una empresa no puede ver datos de otra
+- El cálculo requiere identidad válida
 
-Setup React
+📦 Valor  
+Sistema cerrable y comercializable.
 
-Pantalla de Login
+---
 
-Layout base (shell)
+# 🟡 v0.0.6 — Economic Visibility UI (Core Dashboard)
 
-📌 Valor
-Sistema cerrable, no un script suelto.
+🎯 Objetivo  
+Visualizar el cálculo económico.
 
-🟠 v0.0.5 — Economic Visibility (UI Core)
-Objetivo
+## Frontend
 
-Hacer visible el valor económico.
+- Setup React limpio
+- Login
+- Formulario de carga de datos económicos
+- Llamado real a `/calculate`
+- Dashboard con:
 
-UI
+  - Punto de equilibrio
+  - Excedente total
+  - Distribución capital vs trabajo
+  - Estado económico (pérdida / equilibrio / excedente)
 
-Formulario de carga de datos
+- Estados UX:
+  - Loading
+  - Error claro
+  - Éxito explicado
 
-Ejecución de cálculo
+## Criterio de cierre
 
-Visualización:
+- Una empresa puede cargar datos y ver su resultado
+- El gráfico coincide exactamente con el output del backend
 
-Punto de equilibrio
+📦 Valor  
+Lo invisible se vuelve visible.
 
-Excedente total
+---
 
-Capital vs Trabajo
+# 🔴 v0.0.7 — Labor Distribution Engine
 
-UX
+🎯 Objetivo  
+Cerrar el loop con trabajadores.
 
-Estados claros (sin ganancia, error, éxito)
+## Backend
 
-Mensajes explicativos
+- Algoritmo configurable de distribución
+- Reglas:
+  - proporcional salario
+  - proporcional productividad
+  - fijo + variable
+- Trazabilidad completa
 
-📌 Valor
-La empresa ve lo que antes estaba oculto.
+## Frontend
 
-🔴 v0.0.6 — Labor Distribution & Transparency
-Objetivo
+- Tabla por empleado
+- Vista individual
+- Breakdown explicativo del cálculo
 
-Cerrar el loop con el trabajador.
+## Criterio de cierre
 
-Core
+- Cada empleado puede entender su parte
+- El cálculo es 100% reproducible
 
-Algoritmo de asignación interna al personal
+📦 Valor  
+Motivación estructural real.
 
-Soporte de reglas configurables
+---
 
-UI
+# 🟣 v0.0.8 — Certification Layer
 
-Tabla de distribución por empleado
+🎯 Objetivo  
+Convertir cálculo en artefacto legal.
 
-Trazabilidad del cálculo
+## Incluye
 
-Vista “empleado”
+- Hash SHA del período
+- Snapshot congelado de inputs
+- Snapshot congelado de outputs
+- Endpoint:
+  - `POST /certify`
+  - `GET /certificate/:id`
+- Generación:
+  - JSON certificable
+  - PDF exportable
 
-📌 Valor
-Motivación endógena real, no discursiva.
+## Criterio de cierre
 
-🟣 v0.0.7 — Certification & Legal Artifact
-Objetivo
+- El mismo período no puede modificarse tras certificarse
+- El hash cambia si cambia cualquier input
 
-Convertir cálculo en documento defendible.
+📦 Valor  
+Infraestructura legal-tech.
 
-Certificación
+---
 
-Generación de certificado (PDF/JSON)
+# 🧱 v0.0.9 — Refactor & Stability
 
-Hash verificable del período
+🎯 Objetivo  
+Preparar escalabilidad.
 
-Historial de certificados
+## Incluye
 
-Auditoría
+- Separación estricta:
+  - domain
+  - application
+  - infrastructure
+- Eliminación de lógica económica fuera del core
+- Tests unitarios reales del motor
+- Mejora de performance en consultas
+- Manejo de concurrencia básico
 
-Inputs firmados
+## Criterio de cierre
 
-Resultados congelados
+- El core no depende de Express ni Mongo
+- El sistema puede crecer sin reescribirse
 
-Reproducibilidad total
+📦 Valor  
+Arquitectura profesional.
 
-📌 Valor
-EXCEDENTES pasa de app a infraestructura legal-tech.
+---
+
+# 🚀 v0.1.0 — Beta Técnica Cerrada
+
+🎯 Objetivo  
+Producto defendible.
+
+## Incluye
+
+- Deploy estable (backend + frontend)
+- Documentación técnica completa
+- README profesional
+- Changelog ordenado
+- Variables de entorno claras
+- Seed de datos de ejemplo
+- Script de setup automático
+
+## Criterio de cierre
+
+- Se puede instalar en otro entorno en <30 min
+- Demo funcional sin intervención manual
+
+📦 Valor  
+Sistema listo para validación real.
+
+---
+
+# 🧭 Camino v0.1.0 → v1.0.0
+
+v0.2 — Multi-period analytics  
+v0.3 — Proyecciones económicas  
+v0.4 — Simulación de escenarios  
+v0.5 — API pública documentada  
+v0.6 — Multi-moneda  
+v0.7 — Integraciones contables  
+v0.8 — Auditor externo  
+v0.9 — Optimización performance  
+v1.0 — Release estable productivo
+
+---
+
+# 🔖 Versionado
+
+Formato: v0.0.X  
+Semantic Versioning  
+Cada versión debe incluir:
+
+- Tag Git
+- Release notes claras
+- Criterio de cierre cumplido
+- Valor explícito generado
+
+Sin valor → no existe versión.

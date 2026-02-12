@@ -1,5 +1,5 @@
 import styles from "../styles/Dashboard.module.css";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 export default function Dashboard() {
   const { logout } = useAuth();

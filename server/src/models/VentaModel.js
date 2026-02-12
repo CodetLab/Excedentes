@@ -1,23 +1,16 @@
 import mongoose from "mongoose";
 
+// Modelo simplificado: solo monto en USD (según requisito de Nestor)
 const VentaSchema = new mongoose.Schema(
   {
-    products: [
-      {
-        productId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Producto",
-          required: true,
-        },
-        quantity: { type: Number, required: true, min: 1 },
-        unitPrice: { type: Number, required: true, min: 0 },
-      },
-    ],
-    totalAmount: { type: Number, required: true, min: 0 },
-    date: { type: Date, default: Date.now },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    montoUSD: { type: Number, required: true, min: 0 },
+    descripcion: { type: String, default: "" },
+    periodo: { type: String, default: "" }, // mes/año
+    fecha: { type: Date, default: Date.now },
   },
   {
-    timestamps: false,
+    timestamps: true,
   }
 );
 

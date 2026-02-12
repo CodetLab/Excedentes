@@ -7,9 +7,13 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
     "types": ["jest", "node"],
     "skipLibCheck": true
   },
-  "include": ["src/core/**/*", "tests/**/*"]
+  "include": ["src/core/**/*"],
+  "exclude": ["tests/**/*", "node_modules"]
 }

@@ -1,0 +1,248 @@
+.dashboard {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard h1 {
+  margin-bottom: 0.5rem;
+  color: var(--color-text, #1a1a2e);
+}
+
+.dashboard-subtitle {
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 2rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form Card */
+.form-card {
+  position: sticky;
+  top: 1rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, #e0e0e0);
+}
+
+/* Results Section */
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Error Card */
+.error-card {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.error-message {
+  color: #dc2626;
+}
+
+/* Status Card */
+.status-card {
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.status-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.status-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.status-value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.status-perdida {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-color: #fecaca;
+}
+.status-perdida .status-value {
+  color: #dc2626;
+}
+
+.status-equilibrio {
+  background: linear-gradient(135deg, #fefce8, #fef9c3);
+  border-color: #fde047;
+}
+.status-equilibrio .status-value {
+  color: #ca8a04;
+}
+
+.status-excedente {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-color: #86efac;
+}
+.status-excedente .status-value {
+  color: #16a34a;
+}
+
+/* KPI Grid */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.kpi-card {
+  text-align: center;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.kpi-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text, #1a1a2e);
+}
+
+.kpi-value.positive {
+  color: #16a34a;
+}
+
+.kpi-value.negative {
+  color: #dc2626;
+}
+
+/* Distribution */
+.distribution-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.distribution-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.distribution-bar {
+  height: 24px;
+  background: #f1f5f9;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.distribution-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+}
+
+.distribution-fill.capital {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+
+.distribution-fill.labor {
+  background: linear-gradient(90deg, #14b8a6, #22c55e);
+}
+
+.distribution-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.distribution-percent {
+  color: var(--color-text-secondary, #666);
+}
+
+/* Audit */
+.audit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.audit-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+.audit-row:last-child {
+  border-bottom: none;
+}
+
+.audit-status {
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+}
+
+.audit-pass {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.audit-fail {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-content p {
+  color: var(--color-text-secondary, #666);
+  font-size: 1rem;
+}
