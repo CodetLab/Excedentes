@@ -1,4 +1,4 @@
-import { runExcedentesEngine } from "../src/core/orchestrator.js";
+import { runExcedentesEngine } from "../dist/core/orchestrator.js";
 
 describe("EXCEDENTES Core Engine orchestrator", () => {
   const baseInput = {
