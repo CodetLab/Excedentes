@@ -40,3 +40,6 @@ export const registerRequest = async (payload: {
   password: string;
 }): Promise<AuthResponse> =>
   request<AuthResponse>("/api/auth/register", payload);
+
+const authService = { loginRequest, registerRequest };
+export default authService;

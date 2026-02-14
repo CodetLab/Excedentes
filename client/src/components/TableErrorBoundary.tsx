@@ -2,7 +2,7 @@
  * ErrorBoundary para capturar errores en DataTable y otros componentes
  * Evita que toda la app crashee por un error de renderizado
  */
-import React, { Component, ReactNode } from "react";
+import React, { Component, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;

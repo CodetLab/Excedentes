@@ -103,11 +103,8 @@ export const extrasService = {
   },
 
   async create(data: Omit<ExtrasItem, "id">): Promise<ExtrasItem> {
-    // Calcular monto anual si no viene
-    const montoAnualUSD = data.montoAnualUSD || data.montoMensualUSD * 12;
     const response = await apiClient.post<ApiResponse<ExtrasItem>>("/api/extras", {
       ...data,
-      montoAnualUSD,
     });
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error creando extra");
@@ -133,8 +130,8 @@ export const extrasService = {
   async getTotalCostosFijos(): Promise<number> {
     const extras = await this.getAll();
     return extras
-      .filter((e) => e.esFijo)
-      .reduce((sum, e) => sum + e.montoAnualUSD, 0);
+      .filter((e) => e.esCostoFijo)
+      .reduce((sum, e) => sum + e.montoMensualUSD * 12, 0);
   },
 };
 

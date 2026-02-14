@@ -5,7 +5,6 @@ import {
   FiChevronDown,
   FiChevronRight,
   FiMap,
-  FiGrid,
   FiTruck,
   FiTool,
   FiPackage,
