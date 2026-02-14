@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   calculate,
+  calculateDirect,
   calculateForPeriod,
   getCostTotals,
 } from "../controllers/calculate.controller.js";
@@ -14,10 +15,17 @@ const router = Router();
 
 /**
  * POST /calculate
- * Cálculo directo con datos enviados en el body
- * Validación estricta de inputs (v0.0.3)
+ * NUEVO v0.0.4: Calcula usando datos persistidos
+ * Body: { userId, month, year }
  */
-router.post("/", validateBody(calculateSchema), calculate);
+router.post("/", calculate);
+
+/**
+ * POST /calculate/direct
+ * Cálculo directo con datos enviados en el body (simulación)
+ * Validación estricta de inputs
+ */
+router.post("/direct", validateBody(calculateSchema), calculateDirect);
 
 /**
  * POST /calculate/period/:periodId

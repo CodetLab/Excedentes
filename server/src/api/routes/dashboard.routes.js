@@ -9,4 +9,7 @@ router.get("/summary", dashboardController.getSummary);
 // GET /api/dashboard/kpis - KPIs principales
 router.get("/kpis", dashboardController.getKPIs);
 
+// GET /api/dashboard/period-summary - Consolidación por período (v0.0.4)
+router.get("/period-summary", dashboardController.getPeriodSummary);
+
 export default router;

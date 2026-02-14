@@ -3,6 +3,7 @@ import companyRepository from "../repositories/company.repository.js";
 import employeeRepository from "../repositories/employee.repository.js";
 import assetRepository from "../repositories/asset.repository.js";
 import periodRepository from "../repositories/period.repository.js";
+import dataConsolidationService from "./data-consolidation.service.js";
 import { validateEconomicState } from "./economic.validator.js";
 import { NotFoundError } from "../utils/errors.js";
 import logger from "../utils/logger.js";
@@ -15,6 +16,65 @@ import logger from "../utils/logger.js";
  * Incluye validaciones económicas y logging estructurado.
  */
 class EconomicCalculationService {
+  /**
+   * NUEVO v0.0.4: Calcular usando datos persistidos agrupados por período
+   * Este es el método principal que debe usar el frontend.
+   * 
+   * @param {string} userId - ID del usuario/empresa
+   * @param {number} month - Mes (1-12)
+   * @param {number} year - Año
+   * @returns {Promise<Object>} Resultado del cálculo
+   */
+  async calculateByPeriod(userId, month, year) {
+    logger.info(`Iniciando cálculo para período ${month}/${year}, userId: ${userId}`);
+
+    // 1. Consolidar datos desde la base de datos
+    const consolidatedData = await dataConsolidationService.consolidateByPeriod(
+      userId,
+      month,
+      year
+    );
+
+    // 2. Validar estado económico ANTES de calcular
+    validateEconomicState({
+      sales: consolidatedData.sales,
+      fixedCapitalCosts: consolidatedData.fixedCapitalCosts,
+      fixedLaborCosts: consolidatedData.fixedLaborCosts,
+      profit: consolidatedData.profit,
+    });
+
+    // 3. Preparar input para el motor
+    const engineInput = {
+      Sales: consolidatedData.sales,
+      FixedCapitalCosts: consolidatedData.fixedCapitalCosts,
+      FixedLaborCosts: consolidatedData.fixedLaborCosts,
+      Profit: consolidatedData.profit,
+      Amortization: 0, // Por ahora sin amortización
+      Interests: 0, // Por ahora sin intereses
+      Period: consolidatedData.period.name,
+      Currency: "USD",
+      InflationIndex: 1,
+      AccountingCriteria: "ACCRUAL",
+      employees: consolidatedData.employees,
+    };
+
+    // 4. Ejecutar motor de cálculo (función pura)
+    logger.info("Ejecutando motor de cálculo", { 
+      sales: engineInput.Sales,
+      fixedCosts: engineInput.FixedCapitalCosts + engineInput.FixedLaborCosts
+    });
+
+    const result = runExcedentesEngine(engineInput);
+
+    // 5. Formatear respuesta
+    const formattedResult = this.formatResponse(engineInput, result, null, consolidatedData);
+
+    // 6. Log del cálculo exitoso
+    logger.calculation(userId, consolidatedData.period, formattedResult);
+
+    return formattedResult;
+  }
+
   /**
    * Ejecutar cálculo económico para un período específico
    */
@@ -123,7 +183,7 @@ class EconomicCalculationService {
   /**
    * Formatear respuesta estructurada según spec v0.0.4
    */
-  formatResponse(input, result, period = null) {
+  formatResponse(input, result, period = null, consolidatedData = null) {
     const breakEven = input.FixedCapitalCosts + input.FixedLaborCosts;
     const totalRevenue = input.Sales;
     const totalCost = breakEven + (result.distributableSurplus > 0 ? 
@@ -160,6 +220,15 @@ class EconomicCalculationService {
         accountingCriteria: input.AccountingCriteria,
         employeeCount: input.employees?.length || 0,
       },
+      // Incluir detalles de consolidación si existen
+      ...(consolidatedData && {
+        consolidation: {
+          totalFixedCosts: consolidatedData.totalFixedCosts,
+          totalCosts: consolidatedData.totalCosts,
+          extrasCosts: consolidatedData.extrasCosts,
+          details: consolidatedData.details,
+        }
+      }),
     };
   }
 

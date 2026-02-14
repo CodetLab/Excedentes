@@ -30,23 +30,47 @@ app.get("/", (req, res) => {
       "Data Integrity & Economic Safety",
       "Structured Error Handling",
       "Normalized Responses {success, data, timestamp}",
-      "Economic Validations"
+      "Economic Validations",
+      "Consolidated Resource Routes"
     ],
-    endpoints: [
-      "/api/auth",
-      "/api/costos", 
-      "/api/capital",
-      "/api/capital/:tipo",
-      "/api/personal/propio",
-      "/api/personal/terceros",
-      "/api/personal/summary",
-      "/api/ventas",
-      "/api/ganancias",
-      "/api/extras",
-      "/api/excedentes/calc",
-      "/api/dashboard/summary",
-      "/api/calculate"
-    ]
+    endpoints: {
+      auth: ["/api/auth/login", "/api/auth/register"],
+      capital: [
+        "/api/capital",
+        "/api/capital/summary",
+        "/api/capital/:tipo (tierras|inmuebles|muebles|vehiculos|herramientas|stock)",
+        "/api/capital/item/:id"
+      ],
+      personal: [
+        "/api/personal",
+        "/api/personal/propio",
+        "/api/personal/terceros",
+        "/api/personal/summary/totals",
+        "/api/personal/:id"
+      ],
+      transacciones: [
+        "/api/ventas",
+        "/api/ganancias",
+        "/api/extras"
+      ],
+      calculos: [
+        "/api/calculate",
+        "/api/calculate/direct",
+        "/api/calculate/from-data",
+        "/api/calculate/period/:periodId",
+        "/api/calculate/preview",
+        "/api/calculate/status"
+      ],
+      dashboard: [
+        "/api/dashboard/summary",
+        "/api/dashboard/kpis",
+        "/api/dashboard/period-summary"
+      ],
+      otras: [
+        "/api/costos",
+        "/api/excedentes/calc"
+      ]
+    }
   });
 });
 

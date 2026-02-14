@@ -44,10 +44,10 @@ No es burocracia: es una forma de reducir fricción y escalar mejor.
 
 ### Branches de versión
 
-Cada feature o mejora significativa vive en su propio branch:
+Cada feature o mejora significativa vive en su propio branch: con un comando mas profesional
 
 ```bash
-git checkout -b v0.x
+git switch -c v0.0.x
 ```
 
 ## Cuando una rama es estable se hace un Pull Request y se elimina
