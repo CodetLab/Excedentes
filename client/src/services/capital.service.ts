@@ -75,7 +75,7 @@ async function update<T extends CapitalItem>(type: CapitalType, id: string, data
 }
 
 async function remove(type: CapitalType, id: string): Promise<void> {
-  const response = await apiClient.delete<ApiResponse<void>>(`${ENDPOINTS[type]}/${id}`);
+  const response = await apiClient.delete<ApiResponse<void>>(`${ENDPOINTS}/${id}`);
   if (!response.data.success) {
     throw new Error(response.data.error || `Error eliminando ${type}`);
   }
