@@ -13,6 +13,7 @@ import type {
   CapitalSummary,
 } from "../types/planillas";
 
+
 const ENDPOINTS: Record<CapitalType, string> = {
   tierras: "/api/capital/tierras",
   inmuebles: "/api/capital/inmuebles",
@@ -67,7 +68,7 @@ async function create<T extends CapitalItem>(type: CapitalType, data: Omit<T, "i
 }
 
 async function update<T extends CapitalItem>(type: CapitalType, id: string, data: Partial<T>): Promise<T> {
-  const response = await apiClient.put<ApiResponse<any>>(`${ENDPOINTS[type]}/${id}`, data);
+  const response = await apiClient.put<ApiResponse<any>>(`/api/capital/item/${id}`, data);
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error || `Error actualizando ${type}`);
   }
@@ -75,7 +76,7 @@ async function update<T extends CapitalItem>(type: CapitalType, id: string, data
 }
 
 async function remove(type: CapitalType, id: string): Promise<void> {
-  const response = await apiClient.delete<ApiResponse<void>>(`${ENDPOINTS}/${id}`);
+  const response = await apiClient.delete<ApiResponse<void>>(`/api/capital/item/${id}`);
   if (!response.data.success) {
     throw new Error(response.data.error || `Error eliminando ${type}`);
   }

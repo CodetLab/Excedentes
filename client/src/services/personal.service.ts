@@ -65,7 +65,7 @@ export const personalPropioService = {
       const cargos = data.cargosSocialesUSD ?? current.cargosSocialesUSD;
       updateData.costoTotalMensualUSD = salario + cargos;
     }
-    const response = await apiClient.put<ApiResponse<any>>(`/api/personal/propio/${id}`, updateData);
+    const response = await apiClient.put<ApiResponse<any>>(`/api/personal/${id}`, updateData);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error actualizando personal");
     }
@@ -73,7 +73,7 @@ export const personalPropioService = {
   },
 
   async remove(id: string): Promise<void> {
-    const response = await apiClient.delete<ApiResponse<void>>(`/api/personal/propio/${id}`);
+    const response = await apiClient.delete<ApiResponse<void>>(`/api/personal/${id}`);
     if (!response.data.success) {
       throw new Error(response.data.error || "Error eliminando personal");
     }
