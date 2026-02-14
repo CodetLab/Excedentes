@@ -14,38 +14,46 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+// Helper: Map MongoDB _id to id
+function mapMongoId<T>(item: any): T {
+  if (!item) return item;
+  const { _id, ...rest } = item;
+  return { ...rest, id: _id } as T;
+}
+
 // ========================================
 // PERSONAL PROPIO
 // ========================================
 
 export const personalPropioService = {
   async getAll(): Promise<PersonalPropioItem[]> {
-    const response = await apiClient.get<ApiResponse<PersonalPropioItem[]>>("/api/personal/propio");
+    const response = await apiClient.get<ApiResponse<any[]>>("/api/personal/propio");
     if (!response.data.success) {
       throw new Error(response.data.error || "Error obteniendo personal propio");
     }
-    return response.data.data || [];
+    const items = response.data.data || [];
+    return items.map(item => mapMongoId<PersonalPropioItem>(item));
   },
 
   async getById(id: string): Promise<PersonalPropioItem> {
-    const response = await apiClient.get<ApiResponse<PersonalPropioItem>>(`/api/personal/propio/${id}`);
+    const response = await apiClient.get<ApiResponse<any>>(`/api/personal/propio/${id}`);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Personal no encontrado");
     }
-    return response.data.data;
+    return mapMongoId<PersonalPropioItem>(response.data.data);
   },
 
   async create(data: Omit<PersonalPropioItem, "id">): Promise<PersonalPropioItem> {
     // Calcular costo total mensual
     const costoTotalMensualUSD = data.salarioMensualUSD + data.cargosSocialesUSD;
-    const response = await apiClient.post<ApiResponse<PersonalPropioItem>>("/api/personal/propio", {
+    const response = await apiClient.post<ApiResponse<any>>("/api/personal/propio", {
       ...data,
       costoTotalMensualUSD,
     });
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error creando personal");
     }
-    return response.data.data;
+    return mapMongoId<PersonalPropioItem>(response.data.data);
   },
 
   async update(id: string, data: Partial<PersonalPropioItem>): Promise<PersonalPropioItem> {
@@ -57,11 +65,11 @@ export const personalPropioService = {
       const cargos = data.cargosSocialesUSD ?? current.cargosSocialesUSD;
       updateData.costoTotalMensualUSD = salario + cargos;
     }
-    const response = await apiClient.put<ApiResponse<PersonalPropioItem>>(`/api/personal/propio/${id}`, updateData);
+    const response = await apiClient.put<ApiResponse<any>>(`/api/personal/propio/${id}`, updateData);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error actualizando personal");
     }
-    return response.data.data;
+    return mapMongoId<PersonalPropioItem>(response.data.data);
   },
 
   async remove(id: string): Promise<void> {
@@ -83,35 +91,36 @@ export const personalPropioService = {
 
 export const personalTercerosService = {
   async getAll(): Promise<PersonalTercerosItem[]> {
-    const response = await apiClient.get<ApiResponse<PersonalTercerosItem[]>>("/api/personal/terceros");
+    const response = await apiClient.get<ApiResponse<any[]>>("/api/personal/terceros");
     if (!response.data.success) {
       throw new Error(response.data.error || "Error obteniendo personal terceros");
     }
-    return response.data.data || [];
+    const items = response.data.data || [];
+    return items.map(item => mapMongoId<PersonalTercerosItem>(item));
   },
 
   async getById(id: string): Promise<PersonalTercerosItem> {
-    const response = await apiClient.get<ApiResponse<PersonalTercerosItem>>(`/api/personal/terceros/${id}`);
+    const response = await apiClient.get<ApiResponse<any>>(`/api/personal/terceros/${id}`);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Servicio no encontrado");
     }
-    return response.data.data;
+    return mapMongoId<PersonalTercerosItem>(response.data.data);
   },
 
   async create(data: Omit<PersonalTercerosItem, "id">): Promise<PersonalTercerosItem> {
-    const response = await apiClient.post<ApiResponse<PersonalTercerosItem>>("/api/personal/terceros", data);
+    const response = await apiClient.post<ApiResponse<any>>("/api/personal/terceros", data);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error creando servicio terceros");
     }
-    return response.data.data;
+    return mapMongoId<PersonalTercerosItem>(response.data.data);
   },
 
   async update(id: string, data: Partial<PersonalTercerosItem>): Promise<PersonalTercerosItem> {
-    const response = await apiClient.put<ApiResponse<PersonalTercerosItem>>(`/api/personal/terceros/${id}`, data);
+    const response = await apiClient.put<ApiResponse<any>>(`/api/personal/terceros/${id}`, data);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error actualizando servicio");
     }
-    return response.data.data;
+    return mapMongoId<PersonalTercerosItem>(response.data.data);
   },
 
   async remove(id: string): Promise<void> {

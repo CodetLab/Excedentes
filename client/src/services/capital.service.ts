@@ -34,36 +34,44 @@ interface ApiResponse<T> {
 // CRUD GENÉRICO
 // ========================================
 
+// Helper: Map MongoDB _id to id
+function mapMongoId<T extends CapitalItem>(item: any): T {
+  if (!item) return item;
+  const { _id, ...rest } = item;
+  return { ...rest, id: _id } as T;
+}
+
 async function getAll<T extends CapitalItem>(type: CapitalType): Promise<T[]> {
-  const response = await apiClient.get<ApiResponse<T[]>>(ENDPOINTS[type]);
+  const response = await apiClient.get<ApiResponse<any[]>>(ENDPOINTS[type]);
   if (!response.data.success) {
     throw new Error(response.data.error || `Error obteniendo ${type}`);
   }
-  return response.data.data || [];
+  const items = response.data.data || [];
+  return items.map(item => mapMongoId<T>(item));
 }
 
 async function getById<T extends CapitalItem>(type: CapitalType, id: string): Promise<T> {
-  const response = await apiClient.get<ApiResponse<T>>(`${ENDPOINTS[type]}/${id}`);
+  const response = await apiClient.get<ApiResponse<any>>(`${ENDPOINTS[type]}/${id}`);
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error || `${type} no encontrado`);
   }
-  return response.data.data;
+  return mapMongoId<T>(response.data.data);
 }
 
 async function create<T extends CapitalItem>(type: CapitalType, data: Omit<T, "id">): Promise<T> {
-  const response = await apiClient.post<ApiResponse<T>>(ENDPOINTS[type], data);
+  const response = await apiClient.post<ApiResponse<any>>(ENDPOINTS[type], data);
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error || `Error creando ${type}`);
   }
-  return response.data.data;
+  return mapMongoId<T>(response.data.data);
 }
 
 async function update<T extends CapitalItem>(type: CapitalType, id: string, data: Partial<T>): Promise<T> {
-  const response = await apiClient.put<ApiResponse<T>>(`${ENDPOINTS[type]}/${id}`, data);
+  const response = await apiClient.put<ApiResponse<any>>(`${ENDPOINTS[type]}/${id}`, data);
   if (!response.data.success || !response.data.data) {
     throw new Error(response.data.error || `Error actualizando ${type}`);
   }
-  return response.data.data;
+  return mapMongoId<T>(response.data.data);
 }
 
 async function remove(type: CapitalType, id: string): Promise<void> {

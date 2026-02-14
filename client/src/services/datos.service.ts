@@ -15,6 +15,13 @@ interface ApiResponse<T> {
   error?: string;
 }
 
+// Helper: Map MongoDB _id to id
+function mapMongoId<T>(item: any): T {
+  if (!item) return item;
+  const { _id, ...rest } = item;
+  return { ...rest, id: _id } as T;
+}
+
 // ========================================
 // VENTAS (totales, no unitarias)
 // ========================================
@@ -87,37 +94,36 @@ export const gananciasService = {
 
 export const extrasService = {
   async getAll(): Promise<ExtrasItem[]> {
-    const response = await apiClient.get<ApiResponse<ExtrasItem[]>>("/api/extras");
+    const response = await apiClient.get<ApiResponse<any[]>>("/api/extras");
     if (!response.data.success) {
       throw new Error(response.data.error || "Error obteniendo extras");
     }
-    return response.data.data || [];
+    const items = response.data.data || [];
+    return items.map(item => mapMongoId<ExtrasItem>(item));
   },
 
   async getById(id: string): Promise<ExtrasItem> {
-    const response = await apiClient.get<ApiResponse<ExtrasItem>>(`/api/extras/${id}`);
+    const response = await apiClient.get<ApiResponse<any>>(`/api/extras/${id}`);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Extra no encontrado");
     }
-    return response.data.data;
+    return mapMongoId<ExtrasItem>(response.data.data);
   },
 
   async create(data: Omit<ExtrasItem, "id">): Promise<ExtrasItem> {
-    const response = await apiClient.post<ApiResponse<ExtrasItem>>("/api/extras", {
-      ...data,
-    });
+    const response = await apiClient.post<ApiResponse<any>>("/api/extras", data);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error creando extra");
     }
-    return response.data.data;
+    return mapMongoId<ExtrasItem>(response.data.data);
   },
 
   async update(id: string, data: Partial<ExtrasItem>): Promise<ExtrasItem> {
-    const response = await apiClient.put<ApiResponse<ExtrasItem>>(`/api/extras/${id}`, data);
+    const response = await apiClient.put<ApiResponse<any>>(`/api/extras/${id}`, data);
     if (!response.data.success || !response.data.data) {
       throw new Error(response.data.error || "Error actualizando extra");
     }
-    return response.data.data;
+    return mapMongoId<ExtrasItem>(response.data.data);
   },
 
   async remove(id: string): Promise<void> {
