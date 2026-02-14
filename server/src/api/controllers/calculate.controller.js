@@ -4,35 +4,63 @@ import { asyncHandler } from "../../middleware/errorHandler.js";
 
 /**
  * POST /calculate
- * Endpoint principal de cálculo económico según spec v0.0.4
+ * NUEVO v0.0.4: Calcula usando datos persistidos en la base de datos
  * 
  * Body:
  * {
- *   sales: number,
- *   fixedCapitalCosts: number,
- *   fixedLaborCosts: number,
- *   profit: number,
- *   amortization: number,
- *   interests: number,
- *   period?: string,
- *   currency?: "USD" | "ARS" | "EUR",
- *   inflationIndex?: number,
- *   accountingCriteria?: "ACCRUAL" | "CASH",
- *   employees?: Array<{ id: string, name?: string, amount: number }>
+ *   userId: string,     // ID del usuario/empresa
+ *   month: number,      // Mes (1-12)
+ *   year: number        // Año
  * }
  * 
  * Response (normalizada v0.0.4):
  * {
  *   success: true,
- *   data: { breakEven, totalRevenue, totalCost, surplus, distribution, auditTrail, input },
+ *   data: {
+ *     breakEven,
+ *     totalRevenue,
+ *     totalCost,
+ *     surplus,
+ *     distribution,
+ *     auditTrail,
+ *     input,
+ *     consolidation
+ *   },
  *   timestamp: number
  * }
  * 
  * Errores económicos:
  * - InvalidEconomicState: Ventas < Ganancia + Costos Fijos
- * - Validaciones: Valores negativos, datos inválidos
+ * - ValidationError: Datos ausentes o inválidos
+ * - NotFoundError: No hay datos para el período
  */
 export const calculate = asyncHandler(async (req, res) => {
+  const { userId, month, year } = req.body;
+  
+  // Validar campos requeridos
+  if (!userId) {
+    return res.status(400).json({
+      success: false,
+      error: "userId es requerido"
+    });
+  }
+  
+  if (!month || !year) {
+    return res.status(400).json({
+      success: false,
+      error: "month y year son requeridos"
+    });
+  }
+
+  const result = await calculationService.calculateByPeriod(userId, month, year);
+  sendSuccess(res, result);
+});
+
+/**
+ * POST /calculate/direct
+ * Calcular con datos enviados directamente (simulación sin persistir)
+ */
+export const calculateDirect = asyncHandler(async (req, res) => {
   const result = await calculationService.calculateDirect(req.body);
   sendSuccess(res, result);
 });

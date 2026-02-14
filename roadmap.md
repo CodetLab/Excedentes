@@ -43,29 +43,37 @@ El motor ya es infraestructura utilizable.
 
 ---
 
-# 🟡 v0.0.4 — Data Integrity & Economic Safety
+# � v0.0.4 — Data Integrity & Economic Safety (COMPLETADO)
 
 🎯 Objetivo  
 Blindar la consistencia económica.
 
 ## Incluye
 
-- Validaciones económicas (no técnicas):
+✅ Validaciones económicas (no técnicas):
   - Costos negativos prohibidos
   - Revenue inválido bloqueado
   - Períodos duplicados prevenidos
-- Middleware global de errores
-- Logging estructurado
-- Tests automáticos de API (jest)
-- Normalización de respuestas de error
+✅ Servicio de consolidación de datos (`data-consolidation.service.js`)
+✅ Endpoint actualizado `POST /calculate` usando datos persistidos
+✅ Endpoint simulación `POST /calculate/direct`
+✅ Middleware global de errores
+✅ Logging estructurado
+✅ Tests automáticos de API (jest)
+✅ Normalización de respuestas de error
 
 ## Criterio de cierre
 
-- No se puede romper el sistema con inputs absurdos
-- Errores económicos claros y semánticos
+✅ No se puede romper el sistema con inputs absurdos
+✅ Errores económicos claros y semánticos
+✅ El cálculo se basa 100% en datos persistidos
+✅ Consolidación desde múltiples fuentes (ventas, capital, personal, extras)
 
 📦 Valor  
 Confianza matemática.
+
+**Fecha:** 2026-02-14
+**Documentación:** VERSION_0.0.4_COMPLETE.md
 
 ---
 

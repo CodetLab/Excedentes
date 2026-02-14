@@ -1,13 +1,15 @@
 /**
- * API Tests - v0.0.4
- * Tests de integración para Data Integrity & Economic Safety
+ * Tests para /api/calculate - v0.0.4
  * 
- * Casos de prueba:
- * 1. Caso válido → devuelve cálculo correcto
- * 2. Ventas negativas → error
- * 3. Ganancia mayor a ventas → error
- * 4. Ventas < Ganancia + Costos Fijos → error
- * 5. Estructura de respuesta normalizada
+ * Criterios de cierre v0.0.4:
+ * - Período válido → cálculo correcto
+ * - Ventas negativas → error
+ * - Sin ventas → error
+ * - Período inexistente → error claro
+ * - Respuesta normalizada
+ * 
+ * NUEVO: El endpoint ahora usa datos persistidos consolidados
+ * NO usa datos manuales del body
  */
 
 import request from "supertest";
@@ -15,7 +17,49 @@ import app from "../../src/app.js";
 
 describe("API Calculate Endpoint - v0.0.4", () => {
   
-  describe("POST /api/calculate - Successful calculations", () => {
+  describe("POST /api/calculate - Cálculo con datos persistidos", () => {
+    
+    it("should require userId, month, and year", async () => {
+      const response = await request(app)
+        .post("/api/calculate")
+        .send({})
+        .expect("Content-Type", /json/)
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.error).toBeDefined();
+    });
+
+    it("should validate month range (1-12)", async () => {
+      const response = await request(app)
+        .post("/api/calculate")
+        .send({
+          userId: "507f1f77bcf86cd799439011",
+          month: 13,
+          year: 2026,
+        })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.error).toMatch(/month/i);
+    });
+
+    it("should validate year range", async () => {
+      const response = await request(app)
+        .post("/api/calculate")
+        .send({
+          userId: "507f1f77bcf86cd799439011",
+          month: 1,
+          year: 1999,
+        })
+        .expect(400);
+
+      expect(response.body.success).toBe(false);
+      expect(response.body.error).toMatch(/year/i);
+    });
+  });
+
+  describe("POST /api/calculate/direct - Simulación sin persistir", () => {
     
     it("should return correct calculation with valid input", async () => {
       const validInput = {
@@ -33,7 +77,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(validInput)
         .expect("Content-Type", /json/)
         .expect(200);
@@ -65,7 +109,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(minimalInput)
         .expect(200);
 
@@ -81,7 +125,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(inputWithDefaults)
         .expect(200);
 
@@ -92,7 +136,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
     });
   });
 
-  describe("POST /api/calculate - Economic validation errors", () => {
+  describe("POST /api/calculate/direct - Economic validation errors", () => {
     
     it("should reject negative sales with validation error", async () => {
       const invalidInput = {
@@ -103,7 +147,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect("Content-Type", /json/)
         .expect(400);
@@ -124,7 +168,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect(400);
 
@@ -141,7 +185,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect(400);
 
@@ -158,7 +202,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect(400);
 
@@ -176,7 +220,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect(400);
 
@@ -193,7 +237,7 @@ describe("API Calculate Endpoint - v0.0.4", () => {
       };
 
       const response = await request(app)
-        .post("/api/calculate")
+        .post("/api/calculate/direct")
         .send(invalidInput)
         .expect(400);
 

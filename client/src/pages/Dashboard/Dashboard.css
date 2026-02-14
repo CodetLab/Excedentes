@@ -246,3 +246,96 @@
   color: var(--color-text-secondary, #666);
   font-size: 1rem;
 }
+
+/* Period Selector */
+.period-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.period-card {
+  margin-bottom: 1.5rem;
+}
+
+/* Data Table */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border, #e0e0e0);
+}
+
+.data-table th {
+  font-weight: 600;
+  color: var(--color-text, #1a1a2e);
+  background: var(--color-bg-secondary, #f8f9fa);
+}
+
+.data-table .text-right {
+  text-align: right;
+}
+
+.data-table .total-row {
+  font-weight: 600;
+  background: var(--color-bg-secondary, #f8f9fa);
+}
+
+.data-details {
+  padding: 0.75rem;
+  background: var(--color-bg-secondary, #f8f9fa);
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.calculate-action {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.text-muted {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.875rem;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Status Cards - Update for PASS/DEFICIT */
+.status-pass {
+  background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+  border-color: #86efac;
+}
+
+.status-pass .status-value {
+  color: #16a34a;
+}
+
+.status-deficit,
+.status-unknown {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  border-color: #fecaca;
+}
+
+.status-deficit .status-value,
+.status-unknown .status-value {
+  color: #dc2626;
+}
+
+.audit-deficit,
+.audit-unknown {
+  background: #fee2e2;
+  color: #dc2626;
+}

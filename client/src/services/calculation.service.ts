@@ -15,12 +15,33 @@ import type { DatosCargados } from "../types/planillas";
 
 const calculationService = {
   /**
-   * Ejecutar cálculo económico con datos directos
+   * NUEVO v0.0.4: Ejecutar cálculo usando datos persistidos por período
+   * El backend consolida automáticamente los datos
+   */
+  async calculateByPeriod(
+    userId: string,
+    month: number,
+    year: number
+  ): Promise<CalculateResult> {
+    const response = await apiClient.post<ApiResponse<CalculateResult>>(
+      "/api/calculate",
+      { userId, month, year }
+    );
+    
+    if (!response.data.success || !response.data.data) {
+      throw new Error(response.data.error || "Error en el cálculo");
+    }
+    
+    return response.data.data;
+  },
+
+  /**
+   * Ejecutar cálculo económico con datos directos (simulación)
    * Usado para simulaciones rápidas
    */
   async calculate(input: CalculateInput): Promise<CalculateResult> {
     const response = await apiClient.post<ApiResponse<CalculateResult>>(
-      "/api/calculate",
+      "/api/calculate/direct",
       input
     );
     
