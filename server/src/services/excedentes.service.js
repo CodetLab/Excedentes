@@ -12,12 +12,12 @@ class ExcedentesService {
   /**
    * Calcular excedentes
    * @param {Object} overrides - Valores opcionales para sobrescribir los de la DB
-   * @param {string} userId - ID del usuario (opcional)
+   * @param {string} companyId - ID de la empresa
    */
-  async calculate(overrides = {}, userId = null) {
+  async calculate(overrides = {}, companyId = null) {
     // Obtener datos de la base de datos
-    const capitalFilter = userId ? { userId, activo: true } : { activo: true };
-    const costosFilter = userId ? { userId } : {};
+    const capitalFilter = companyId ? { companyId, activo: true } : { activo: true };
+    const costosFilter = companyId ? { companyId } : {};
     
     const [capitalItems, costosItems] = await Promise.all([
       capitalRepository.find(capitalFilter),
@@ -87,7 +87,7 @@ class ExcedentesService {
     
     // Log del cálculo
     logger.calculation(
-      userId || "anonymous",
+      companyId || "anonymous",
       { name: input.Period },
       { 
         surplus: result.distributableSurplus, 

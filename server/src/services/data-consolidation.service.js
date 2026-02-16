@@ -6,6 +6,8 @@
  * 
  * NO hace cálculos económicos.
  * Solo reúne y estructura datos desde la base de datos.
+ * 
+ * 🔐 FASE 5: Ahora filtrado por companyId de forma obligatoria
  */
 
 import Venta from "../models/VentaModel.js";
@@ -17,19 +19,20 @@ import logger from "../utils/logger.js";
 class DataConsolidationService {
   /**
    * Consolidar todos los datos económicos para un período
+   * 🔐 FASE 5: Requiere companyId como identificador principal
    * 
-   * @param {string} userId - ID del usuario/empresa
+   * @param {string} companyId - ID de la empresa
    * @param {number} month - Mes (1-12)
    * @param {number} year - Año
    * @returns {Promise<Object>} Datos consolidados listos para el motor
    */
-  async consolidateByPeriod(userId, month, year) {
+  async consolidateByPeriod(companyId, month, year) {
     // Validar inputs
-    this._validatePeriodInputs(userId, month, year);
+    this._validatePeriodInputs(companyId, month, year);
 
-    logger.info(`Consolidando datos para período: ${month}/${year}, userId: ${userId}`);
+    logger.info(`Consolidando datos para período: ${month}/${year}, companyId: ${companyId}`);
 
-    // Obtener datos en paralelo
+    // Obtener datos en paralelo - filtrando por companyId
     const [
       ventas,
       capitalItems,
@@ -38,12 +41,12 @@ class DataConsolidationService {
       extrasItems,
       gananciasItems
     ] = await Promise.all([
-      this._getVentas(userId, month, year),
-      this._getCapitalItems(userId, month, year),
-      this._getEmpleados(userId),
-      this._getPersonalItems(userId, month, year),
-      this._getExtrasItems(userId, month, year),
-      this._getGananciasItems(userId, month, year)
+      this._getVentas(companyId, month, year),
+      this._getCapitalItems(companyId, month, year),
+      this._getEmpleados(companyId),
+      this._getPersonalItems(companyId, month, year),
+      this._getExtrasItems(companyId, month, year),
+      this._getGananciasItems(companyId, month, year)
     ]);
 
     // Calcular totales
@@ -98,9 +101,9 @@ class DataConsolidationService {
   /**
    * Validar inputs del período
    */
-  _validatePeriodInputs(userId, month, year) {
-    if (!userId) {
-      throw new ValidationError("userId es requerido");
+  _validatePeriodInputs(companyId, month, year) {
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
     }
 
     if (!month || month < 1 || month > 12) {
@@ -113,13 +116,13 @@ class DataConsolidationService {
   }
 
   /**
-   * Obtener ventas del período
+   * Obtener ventas del período - filtradas por companyId
    */
-  async _getVentas(userId, month, year) {
-    // Buscar ventas que coincidan con el período
+  async _getVentas(companyId, month, year) {
+    // Buscar ventas que coincidan con el período y companyId
     const periodo = `${month}/${year}`;
     const ventas = await Venta.find({
-      userId,
+      companyId,
       $or: [
         { periodo },
         { periodo: `${String(month).padStart(2, '0')}/${year}` }
@@ -132,11 +135,11 @@ class DataConsolidationService {
   /**
    * Obtener items de capital (tierras, inmuebles, muebles, vehículos, herramientas, stock)
    */
-  async _getCapitalItems(userId, month, year) {
+  async _getCapitalItems(companyId, month, year) {
     const capitalTypes = ["TIERRAS", "INMUEBLES", "MUEBLES", "VEHICULOS", "HERRAMIENTAS", "STOCK"];
     
     const items = await Capital.find({
-      userId,
+      companyId,
       tipo: { $in: capitalTypes }
     });
 
@@ -146,9 +149,9 @@ class DataConsolidationService {
   /**
    * Obtener empleados activos
    */
-  async _getEmpleados(userId) {
+  async _getEmpleados(companyId) {
     const empleados = await Employee.find({
-      companyId: userId,
+      companyId,
       isActive: true
     });
 
@@ -158,9 +161,9 @@ class DataConsolidationService {
   /**
    * Obtener items de personal (propio y terceros)
    */
-  async _getPersonalItems(userId, month, year) {
+  async _getPersonalItems(companyId, month, year) {
     const items = await Capital.find({
-      userId,
+      companyId,
       tipo: { $in: ["PERSONAL_PROPIO", "PERSONAL_TERCEROS"] }
     });
 
@@ -170,9 +173,9 @@ class DataConsolidationService {
   /**
    * Obtener extras (costos fijos adicionales)
    */
-  async _getExtrasItems(userId, month, year) {
+  async _getExtrasItems(companyId, month, year) {
     const items = await Capital.find({
-      userId,
+      companyId,
       tipo: "EXTRAS"
     });
 
@@ -182,9 +185,9 @@ class DataConsolidationService {
   /**
    * Obtener ganancias
    */
-  async _getGananciasItems(userId, month, year) {
+  async _getGananciasItems(companyId, month, year) {
     const items = await Capital.find({
-      userId,
+      companyId,
       tipo: "GANANCIAS"
     });
 
@@ -281,10 +284,10 @@ class DataConsolidationService {
   /**
    * Verificar si existe un período con datos
    */
-  async periodExists(userId, month, year) {
+  async periodExists(companyId, month, year) {
     const periodo = `${month}/${year}`;
     const ventasCount = await Venta.countDocuments({
-      userId,
+      companyId,
       $or: [
         { periodo },
         { periodo: `${String(month).padStart(2, '0')}/${year}` }

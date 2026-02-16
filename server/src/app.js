@@ -3,8 +3,10 @@ import cors from "cors";
 import { loadEnv, getEnv } from "./config/env.js";
 import { connectDb } from "./config/db.js";
 import { globalErrorHandler, notFoundHandler } from "./middleware/errorHandler.js";
+import { authenticateJWT } from "./middleware/authenticateJWT.js";
 import logger from "./utils/logger.js";
 import authRoutes from "./api/routes/auth.routes.js";
+import usersRoutes from "./api/routes/users.routes.js";
 import costosRoutes from "./api/routes/costos.routes.js";
 import capitalRoutes from "./api/routes/capital.routes.js";
 import personalRoutes from "./api/routes/personal.routes.js";
@@ -35,6 +37,10 @@ app.get("/", (req, res) => {
     ],
     endpoints: {
       auth: ["/api/auth/login", "/api/auth/register"],
+      users: [
+        "/api/users/setup-company",
+        "/api/users/company"
+      ],
       capital: [
         "/api/capital",
         "/api/capital/summary",
@@ -75,15 +81,17 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
-app.use("/api/costos", costosRoutes);
-app.use("/api/capital", capitalRoutes);
-app.use("/api/personal", personalRoutes);
-app.use("/api/ventas", ventasRoutes);
-app.use("/api/ganancias", gananciasRoutes);
-app.use("/api/extras", extrasRoutes);
-app.use("/api/excedentes", excedentesRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/calculate", calculateRoutes);
+app.use("/api/users", authenticateJWT, usersRoutes);
+app.use("/api/company", authenticateJWT, usersRoutes); // Alias for company endpoints
+app.use("/api/costos", authenticateJWT, costosRoutes);
+app.use("/api/capital", authenticateJWT, capitalRoutes);
+app.use("/api/personal", authenticateJWT, personalRoutes);
+app.use("/api/ventas", authenticateJWT, ventasRoutes);
+app.use("/api/ganancias", authenticateJWT, gananciasRoutes);
+app.use("/api/extras", authenticateJWT, extrasRoutes);
+app.use("/api/excedentes", authenticateJWT, excedentesRoutes);
+app.use("/api/dashboard", authenticateJWT, dashboardRoutes);
+app.use("/api/calculate", authenticateJWT, calculateRoutes);
 
 // 404 handler
 app.use(notFoundHandler);

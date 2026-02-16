@@ -10,28 +10,36 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 class PersonalService {
   /**
    * Obtener personal propio
+   * 🔴 FIX: companyId OBLIGATORIO
    */
-  async getPropio(userId = null) {
-    return capitalRepository.findByTipo("PERSONAL_PROPIO", userId);
+  async getPropio(companyId) {
+    console.log(`[PERSONAL] getPropio companyId=${companyId}`);
+    if (!companyId) throw new ValidationError("companyId es requerido");
+    return capitalRepository.findByTipo("PERSONAL_PROPIO", companyId);
   }
 
   /**
    * Obtener personal terceros
+   * 🔴 FIX: companyId OBLIGATORIO
    */
-  async getTerceros(userId = null) {
-    return capitalRepository.findByTipo("PERSONAL_TERCEROS", userId);
+  async getTerceros(companyId) {
+    console.log(`[PERSONAL] getTerceros companyId=${companyId}`);
+    if (!companyId) throw new ValidationError("companyId es requerido");
+    return capitalRepository.findByTipo("PERSONAL_TERCEROS", companyId);
   }
 
   /**
-   * Obtener todo el personal (propio + terceros)
+   * Obtener todo el personal
+   * 🔴 FIX: companyId OBLIGATORIO
    */
-  async getAll(userId = null) {
-    const filters = { 
-      tipo: { $in: ["PERSONAL_PROPIO", "PERSONAL_TERCEROS"] }
-    };
-    if (userId) filters.userId = userId;
+  async getAll(companyId) {
+    console.log(`[PERSONAL] getAll companyId=${companyId}`);
+    if (!companyId) throw new ValidationError("companyId es requerido");
     
-    return capitalRepository.find(filters);
+    return capitalRepository.find({ 
+      companyId,
+      tipo: { $in: ["PERSONAL_PROPIO", "PERSONAL_TERCEROS"] }
+    });
   }
 
   /**
@@ -51,23 +59,23 @@ class PersonalService {
   /**
    * Crear personal propio
    */
-  async createPropio(data, userId) {
-    return this._create(data, "PERSONAL_PROPIO", userId);
+  async createPropio(data, companyId) {
+    return this._create(data, "PERSONAL_PROPIO", companyId);
   }
 
   /**
    * Crear personal terceros
    */
-  async createTerceros(data, userId) {
-    return this._create(data, "PERSONAL_TERCEROS", userId);
+  async createTerceros(data, companyId) {
+    return this._create(data, "PERSONAL_TERCEROS", companyId);
   }
 
   /**
    * Método privado para crear personal
    */
-  async _create(data, tipoPersonal, userId) {
-    if (!userId) {
-      throw new ValidationError("userId es requerido");
+  async _create(data, tipoPersonal, companyId) {
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
     }
 
     const normalizedData = normalizePersonalPayload(data, tipoPersonal);
@@ -85,7 +93,7 @@ class PersonalService {
     return capitalRepository.create({
       ...normalizedData,
       tipo: tipoPersonal,
-      userId,
+      companyId,
     });
   }
 
@@ -124,12 +132,12 @@ class PersonalService {
   /**
    * Obtener resumen de costos de personal
    */
-  async getSummary(userId = null) {
+  async getSummary(companyId = null) {
     const match = { 
       tipo: { $in: ["PERSONAL_PROPIO", "PERSONAL_TERCEROS"] },
       activo: true
     };
-    if (userId) match.userId = userId;
+    if (companyId) match.companyId = companyId;
 
     const summary = await capitalRepository.aggregate([
       { $match: match },

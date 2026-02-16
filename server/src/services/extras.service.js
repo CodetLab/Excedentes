@@ -11,8 +11,8 @@ class ExtrasService {
   /**
    * Obtener todos los extras
    */
-  async getAll(userId = null) {
-    return capitalRepository.findByTipo("EXTRAS", userId);
+  async getAll(companyId = null) {
+    return capitalRepository.findByTipo("EXTRAS", companyId);
   }
 
   /**
@@ -32,9 +32,9 @@ class ExtrasService {
   /**
    * Crear nuevo extra
    */
-  async create(data, userId) {
-    if (!userId) {
-      throw new ValidationError("userId es requerido");
+  async create(data, companyId) {
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
     }
 
     const normalizedData = normalizeExtrasPayload(data);
@@ -51,7 +51,7 @@ class ExtrasService {
     return capitalRepository.create({
       ...normalizedData,
       tipo: "EXTRAS",
-      userId,
+      companyId,
     });
   }
 
@@ -89,9 +89,9 @@ class ExtrasService {
   /**
    * Obtener resumen de extras
    */
-  async getSummary(userId = null) {
+  async getSummary(companyId = null) {
     const match = { tipo: "EXTRAS" };
-    if (userId) match.userId = userId;
+    if (companyId) match.companyId = companyId;
 
     const summary = await capitalRepository.aggregate([
       { $match: match },

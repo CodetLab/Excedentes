@@ -8,13 +8,16 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 class GananciasService {
   /**
    * Obtener ganancias del usuario
-   * Retorna el primer registro o estructura vacía
+   * FIX: companyId OBLIGATORIO
    */
-  async get(userId = null) {
-    const filters = { tipo: "GANANCIAS" };
-    if (userId) filters.userId = userId;
+  async get(companyId) {
+    console.log(`[GANANCIAS] get companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
 
-    const items = await capitalRepository.find(filters);
+    const items = await capitalRepository.find({ tipo: "GANANCIAS", companyId });
 
     if (items.length > 0) {
       return items[0];
@@ -36,23 +39,25 @@ class GananciasService {
 
   /**
    * Crear o actualizar ganancias
-   * Solo permite un registro por usuario
+   * FIX: companyId OBLIGATORIO
    */
-  async createOrUpdate(data, userId) {
-    if (!userId) {
-      throw new ValidationError("userId es requerido");
+  async createOrUpdate(data, companyId) {
+    console.log(`[GANANCIAS] createOrUpdate companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
     }
 
     // Buscar registro existente
     const existing = await capitalRepository.findOne({ 
       tipo: "GANANCIAS",
-      userId 
+      companyId 
     });
 
     // Preparar datos
     const gananciaData = {
       tipo: "GANANCIAS",
-      userId,
+      companyId,
       nombre: "Ganancias",
       mes: data.mes || new Date().getMonth() + 1,
       anio: data.anio || new Date().getFullYear(),
@@ -62,15 +67,13 @@ class GananciasService {
         gananciaPersonal: 0
       },
       notas: data.notas || "",
-      valorUSD: data.totalGanancias || 0, // Para compatibilidad con Capital
+      valorUSD: data.totalGanancias || 0,
       costoUSD: 0,
     };
 
     if (existing) {
-      // Actualizar existente
       return capitalRepository.update(existing._id, gananciaData);
     } else {
-      // Crear nuevo
       return capitalRepository.create(gananciaData);
     }
   }
@@ -78,14 +81,14 @@ class GananciasService {
   /**
    * Eliminar ganancias
    */
-  async delete(userId) {
+  async delete(companyId) {
     const existing = await capitalRepository.findOne({ 
       tipo: "GANANCIAS",
-      userId 
+      companyId 
     });
 
     if (!existing) {
-      throw new NotFoundError("Ganancias", userId);
+      throw new NotFoundError("Ganancias", companyId);
     }
 
     return capitalRepository.delete(existing._id);
@@ -93,9 +96,16 @@ class GananciasService {
 
   /**
    * Obtener total de ganancias
+   * FIX: companyId OBLIGATORIO
    */
-  async getTotal(userId = null) {
-    const ganancias = await this.get(userId);
+  async getTotal(companyId) {
+    console.log(`[GANANCIAS] getTotal companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
+
+    const ganancias = await this.get(companyId);
     return ganancias.totalGanancias || 0;
   }
 }

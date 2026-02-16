@@ -11,9 +11,9 @@ class DashboardService {
   /**
    * Obtener resumen completo para dashboard
    */
-  async getSummary(userId = null) {
-    const capitalFilter = userId ? { userId, activo: true } : { activo: true };
-    const costosFilter = userId ? { userId } : {};
+  async getSummary(companyId = null) {
+    const capitalFilter = companyId ? { companyId, activo: true } : { activo: true };
+    const costosFilter = companyId ? { companyId } : {};
     
     const [capitalItems, costosItems] = await Promise.all([
       capitalRepository.find(capitalFilter),
@@ -119,7 +119,7 @@ class DashboardService {
     };
 
     // Log para auditoría
-    logger.info("Dashboard summary generated", { userId, chartData });
+    logger.info("Dashboard summary generated", { companyId, chartData });
 
     return chartData;
   }
@@ -127,8 +127,8 @@ class DashboardService {
   /**
    * Obtener KPIs principales
    */
-  async getKPIs(userId = null) {
-    const summary = await this.getSummary(userId);
+  async getKPIs(companyId = null) {
+    const summary = await this.getSummary(companyId);
     
     const { balanceGeneral, totals, breakEvenData } = summary;
     

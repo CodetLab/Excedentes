@@ -1,17 +1,22 @@
 import Costo from "../models/CostoModel.js";
 import { ServiceError } from "../utils/serviceError.js";
 
-export const getCostos = async () => {
+export const getCostos = async (companyId = null) => {
   try {
-    return await Costo.find();
+    const filters = {};
+    if (companyId) filters.companyId = companyId;
+    return await Costo.find(filters);
   } catch (error) {
     throw new ServiceError("Error al obtener costos", 500, error);
   }
 };
 
-export const createCosto = async (data) => {
+export const createCosto = async (data, companyId) => {
   try {
-    const nuevoCosto = new Costo(data);
+    if (!companyId) {
+      throw new ServiceError("companyId es requerido", 400);
+    }
+    const nuevoCosto = new Costo({ ...data, companyId });
     await nuevoCosto.save();
     return nuevoCosto;
   } catch (error) {

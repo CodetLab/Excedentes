@@ -28,7 +28,18 @@ const Ganancias = () => {
 
   useEffect(() => { loadData(); }, []);
   const loadData = async () => {
-    try { setLoading(true); const d = await gananciasService.get(); if (d) { setData(d); setForm(d); } } 
+    try { 
+      setLoading(true); 
+      const d = await gananciasService.get(); 
+      if (d) { 
+        setData(d); 
+        // Ensure desglose always has the correct structure
+        setForm({
+          ...d,
+          desglose: d.desglose || { gananciaCapital: 0, gananciaPersonal: 0 }
+        });
+      } 
+    } 
     catch (e) { setError(e instanceof Error ? e.message : "Error"); } 
     finally { setLoading(false); }
   };
@@ -36,7 +47,8 @@ const Ganancias = () => {
     const { name, value, type } = e.target;
     if (name.startsWith("desglose.")) {
       const key = name.split(".")[1] as keyof GananciasData["desglose"];
-      const newDesglose = { ...form.desglose, [key]: parseFloat(value) || 0 };
+      const currentDesglose = form.desglose || { gananciaCapital: 0, gananciaPersonal: 0 };
+      const newDesglose = { ...currentDesglose, [key]: parseFloat(value) || 0 };
       const total = newDesglose.gananciaCapital + newDesglose.gananciaPersonal;
       setForm({ ...form, desglose: newDesglose, gananciaUSD: total });
     } else {
@@ -69,8 +81,8 @@ const Ganancias = () => {
             </div>
             <h3>Desglose de Ganancias (Regla 8: separar capital y trabajo)</h3>
             <div className="form-row">
-              <Input label="Ganancia por Capital USD" name="desglose.gananciaCapital" type="number" min={0} value={form.desglose.gananciaCapital} onChange={handleChange} />
-              <Input label="Ganancia por Trabajo Personal USD" name="desglose.gananciaPersonal" type="number" min={0} value={form.desglose.gananciaPersonal} onChange={handleChange} />
+              <Input label="Ganancia por Capital USD" name="desglose.gananciaCapital" type="number" min={0} value={form.desglose?.gananciaCapital || 0} onChange={handleChange} />
+              <Input label="Ganancia por Trabajo Personal USD" name="desglose.gananciaPersonal" type="number" min={0} value={form.desglose?.gananciaPersonal || 0} onChange={handleChange} />
             </div>
             <Input label="Ganancia Total USD (calculado)" name="gananciaUSD" type="number" value={form.gananciaUSD} disabled />
             <div className="form-field"><label className="form-label">Notas</label><textarea name="notas" className="form-textarea" value={form.notas || ""} onChange={handleChange} rows={3} /></div>

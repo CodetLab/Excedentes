@@ -384,7 +384,6 @@ hr {
 
 .layout-main {
   flex: 1;
-  padding: var(--space-6);
 }
 
 .page {

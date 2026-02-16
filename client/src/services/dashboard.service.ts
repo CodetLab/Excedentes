@@ -34,14 +34,15 @@ export interface PeriodSummary {
 /**
  * Obtener resumen consolidado de un período sin ejecutar cálculo
  * Usado por el dashboard para mostrar tabla de datos
+ * 
+ * El userId es extraído del JWT por el middleware del backend
  */
 export async function getPeriodSummary(
-  userId: string,
   month: number,
   year: number
 ): Promise<PeriodSummary> {
   const response = await apiClient.get<ApiResponse<PeriodSummary>>(
-    `/api/dashboard/period-summary?userId=${userId}&month=${month}&year=${year}`
+    `/api/dashboard/period-summary?month=${month}&year=${year}`
   );
 
   if (!response.data.success || !response.data.data) {

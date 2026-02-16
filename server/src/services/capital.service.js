@@ -30,12 +30,16 @@ class CapitalService {
 
   /**
    * Obtener todos los items de capital
+   * 🔴 FIX: Ahora requiere companyId como parámetro directo
    */
-  async getAll(filters = {}) {
-    const { userId, tipo } = filters;
+  async getAll(companyId, tipo = null) {
+    console.log(`[CAPITAL] getAll companyId=${companyId}, tipo=${tipo}`);
     
-    const query = { tipo: { $in: TIPOS_VALIDOS } };
-    if (userId) query.userId = userId;
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido en service");
+    }
+
+    const query = { companyId, tipo: { $in: TIPOS_VALIDOS } };
     if (tipo) {
       const tipoUpper = this.validateTipo(tipo);
       query.tipo = tipoUpper;
@@ -46,10 +50,17 @@ class CapitalService {
 
   /**
    * Obtener items por tipo
+   * 🔴 FIX: Validar companyId obligatorio
    */
-  async getByTipo(tipo, userId = null) {
+  async getByTipo(tipo, companyId) {
+    console.log(`[CAPITAL] getByTipo tipo=${tipo}, companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
+
     const tipoUpper = this.validateTipo(tipo);
-    return capitalRepository.findByTipo(tipoUpper, userId);
+    return capitalRepository.findByTipo(tipoUpper, companyId);
   }
 
   /**
@@ -65,12 +76,15 @@ class CapitalService {
 
   /**
    * Crear nuevo item de capital
+   * 🔴 FIX: Validar companyId primero
    */
-  async create(tipo, data, userId) {
+  async create(tipo, data, companyId) {
+    console.log(`[CAPITAL] create tipo=${tipo}, companyId=${companyId}`);
+    
     const tipoUpper = this.validateTipo(tipo);
     
-    if (!userId) {
-      throw new ValidationError("userId es requerido");
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
     }
     
     // Normalizar y validar
@@ -83,7 +97,7 @@ class CapitalService {
     return capitalRepository.create({
       ...normalizedData,
       tipo: tipoUpper,
-      userId,
+      companyId,
     });
   }
 
@@ -115,10 +129,16 @@ class CapitalService {
 
   /**
    * Obtener resumen agregado por tipo
+   * 🔴 FIX: companyId es obligatorio
    */
-  async getSummary(userId = null) {
-    const match = { tipo: { $in: TIPOS_VALIDOS } };
-    if (userId) match.userId = userId;
+  async getSummary(companyId) {
+    console.log(`[CAPITAL] getSummary companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
+
+    const match = { companyId, tipo: { $in: TIPOS_VALIDOS } };
     
     const summary = await capitalRepository.aggregate([
       { $match: match },

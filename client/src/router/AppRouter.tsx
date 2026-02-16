@@ -11,6 +11,7 @@ import Costos from "@/pages/Costos/Costos";
 import Productos from "@/pages/Productos/Productos";
 import Reportes from "@/pages/Reportes/Reportes";
 import Ventas from "@/pages/Ventas/Ventas";
+import Perfil from "@/pages/Perfil/Perfil";
 
 // Capital (6 subsecciones)
 import Tierras from "@/pages/Capital/Tierras/Tierras";
@@ -63,6 +64,7 @@ export default function AppRouter() {
           <Route path="ventas" element={<Ventas />} />
           <Route path="reportes" element={<Reportes />} />
           <Route path="configuracion" element={<Configuracion />} />
+          <Route path="perfil" element={<Perfil />} />
           
           {/* Capital - 6 subsecciones */}
           <Route path="capital/tierras" element={<Tierras />} />

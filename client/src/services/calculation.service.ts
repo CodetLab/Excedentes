@@ -17,15 +17,16 @@ const calculationService = {
   /**
    * NUEVO v0.0.4: Ejecutar cálculo usando datos persistidos por período
    * El backend consolida automáticamente los datos
+   * 
+   * El userId y companyId son extraídos del JWT por el middleware del backend
    */
   async calculateByPeriod(
-    userId: string,
     month: number,
     year: number
   ): Promise<CalculateResult> {
     const response = await apiClient.post<ApiResponse<CalculateResult>>(
       "/api/calculate",
-      { userId, month, year }
+      { month, year }
     );
     
     if (!response.data.success || !response.data.data) {

@@ -18,19 +18,23 @@ import logger from "../utils/logger.js";
 class EconomicCalculationService {
   /**
    * NUEVO v0.0.4: Calcular usando datos persistidos agrupados por período
-   * Este es el método principal que debe usar el frontend.
+   * 🔐 FASE 5: Ahora requiere companyId como identificador principal
    * 
-   * @param {string} userId - ID del usuario/empresa
+   * @param {string} companyId - ID de la empresa
    * @param {number} month - Mes (1-12)
    * @param {number} year - Año
    * @returns {Promise<Object>} Resultado del cálculo
    */
-  async calculateByPeriod(userId, month, year) {
-    logger.info(`Iniciando cálculo para período ${month}/${year}, userId: ${userId}`);
+  async calculateByPeriod(companyId, month, year) {
+    if (!companyId) {
+      throw new Error("companyId es requerido");
+    }
 
-    // 1. Consolidar datos desde la base de datos
+    logger.info(`Iniciando cálculo para período ${month}/${year}, companyId: ${companyId}`);
+
+    // 1. Consolidar datos desde la base de datos (ahora con companyId)
     const consolidatedData = await dataConsolidationService.consolidateByPeriod(
-      userId,
+      companyId,
       month,
       year
     );
@@ -70,18 +74,25 @@ class EconomicCalculationService {
     const formattedResult = this.formatResponse(engineInput, result, null, consolidatedData);
 
     // 6. Log del cálculo exitoso
-    logger.calculation(userId, consolidatedData.period, formattedResult);
+    logger.calculation(companyId, consolidatedData.period, formattedResult);
 
     return formattedResult;
   }
 
   /**
-   * Ejecutar cálculo económico para un período específico
+   * Ejecutar cálculo para un período específico
+   * 🔐 FASE 5: Valida que el período pertenece a la empresa del usuario
    */
-  async calculateForPeriod(periodId) {
+  async calculateForPeriod(periodId, companyId, userRole = "company") {
     // 1. Obtener datos del período
     const period = await periodRepository.findById(periodId);
     if (!period) {
+      throw new NotFoundError("Período", periodId);
+    }
+
+    // 🔐 Validar acceso multi-tenant
+    if (userRole === "company" && period.companyId.toString() !== companyId) {
+      // Retornar 404 para no revelar existencia del recurso
       throw new NotFoundError("Período", periodId);
     }
 

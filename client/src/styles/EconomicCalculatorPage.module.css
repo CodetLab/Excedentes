@@ -1,0 +1,198 @@
+/* EconomicCalculatorPage.module.css */
+
+.page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background: white;
+  border-bottom: 2px solid #2196f3;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.headerContent h1 {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #1a1a1a;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.companyId {
+  background: #e3f2fd;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  color: #1976d2;
+  font-family: monospace;
+}
+
+.logoutBtn {
+  padding: 0.75rem 1.5rem;
+  background: white;
+  border: 2px solid #d32f2f;
+  border-radius: 4px;
+  color: #d32f2f;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.logoutBtn:hover {
+  background: #ffebee;
+  transform: translateY(-1px);
+}
+
+.container {
+  flex: 1;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.section {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.actionBar {
+  background: white;
+  border-top: 1px solid #e0e0e0;
+  padding: 1rem 2rem;
+  position: sticky;
+  bottom: 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.actionContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+.actionBtn {
+  padding: 0.75rem 1.5rem;
+  background: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.95rem;
+}
+
+.actionBtn:hover {
+  background: #1976d2;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.notAuthenticated {
+  margin: auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+}
+
+.notAuthenticated h2 {
+  margin: 0 0 1rem;
+  color: #d32f2f;
+}
+
+.notAuthenticated p {
+  margin: 0;
+  color: #666;
+  line-height: 1.6;
+}
+
+@media (max-width: 800px) {
+  .page {
+    min-height: auto;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+
+  .headerContent h1 {
+    font-size: 1.5rem;
+  }
+
+  .logoutBtn {
+    align-self: flex-start;
+  }
+
+  .container {
+    padding: 1rem;
+  }
+
+  .actionBar {
+    position: static;
+  }
+
+  .actionContent {
+    flex-direction: column;
+  }
+
+  .actionBtn {
+    width: 100%;
+  }
+}
+
+@media print {
+  .header,
+  .actionBar,
+  .logoutBtn,
+  .actionBtn {
+    display: none;
+  }
+
+  .page {
+    background: white;
+  }
+
+  .container {
+    padding: 0;
+  }
+}

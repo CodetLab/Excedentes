@@ -7,11 +7,12 @@ import { ValidationError, NotFoundError } from "../utils/errors.js";
 class VentasService {
   /**
    * Obtener todas las ventas
+   * FIX: companyId OBLIGATORIO
    */
-  async getAll(userId = null) {
-    const filters = {};
-    if (userId) filters.userId = userId;
-    return Venta.find(filters).sort({ fecha: -1 });
+  async getAll(companyId) {
+    console.log(`[VENTAS] getAll companyId=${companyId}`);
+    if (!companyId) throw new ValidationError("companyId es requerido");
+    return Venta.find({ companyId }).sort({ fecha: -1 });
   }
 
   /**
@@ -27,8 +28,15 @@ class VentasService {
 
   /**
    * Crear nueva venta
+   * FIX: companyId OBLIGATORIO
    */
-  async create(data, userId = null) {
+  async create(data, companyId) {
+    console.log(`[VENTAS] create companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
+
     // Validaciones
     if (!data.montoUSD || data.montoUSD < 0) {
       throw new ValidationError("El monto debe ser mayor o igual a 0");
@@ -36,7 +44,7 @@ class VentasService {
 
     const ventaData = {
       ...data,
-      userId: userId || data.userId,
+      companyId,
       montoUSD: data.montoUSD,
       descripcion: data.descripcion || "",
       periodo: data.periodo || "",
@@ -81,13 +89,17 @@ class VentasService {
 
   /**
    * Obtener resumen de ventas
+   * FIX: companyId OBLIGATORIO
    */
-  async getSummary(userId = null) {
-    const match = {};
-    if (userId) match.userId = userId;
+  async getSummary(companyId) {
+    console.log(`[VENTAS] getSummary companyId=${companyId}`);
+    
+    if (!companyId) {
+      throw new ValidationError("companyId es requerido");
+    }
 
     const summary = await Venta.aggregate([
-      { $match: match },
+      { $match: { companyId } },
       {
         $group: {
           _id: null,

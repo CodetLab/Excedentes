@@ -1,0 +1,55 @@
+/* BreakEvenChart.module.css */
+
+.chartContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.svg {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.interpretation {
+  padding: 1rem;
+  border-radius: 6px;
+  background: #f9f9f9;
+  border-left: 4px solid;
+}
+
+.success {
+  border-left-color: #4caf50;
+  color: #2e7d32;
+}
+
+.success strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.success p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.warning {
+  border-left-color: #ff9800;
+  color: #e65100;
+}
+
+.warning strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.warning p {
+  margin: 0;
+  font-size: 0.95rem;
+}

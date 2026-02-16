@@ -1,6 +1,6 @@
 import dashboardService from "../../services/dashboard.service.js";
 import dataConsolidationService from "../../services/data-consolidation.service.js";
-import { sendSuccess } from "../../utils/response.js";
+import { sendSuccess, sendError } from "../../utils/response.js";
 import { asyncHandler } from "../../middleware/errorHandler.js";
 
 /**
@@ -8,8 +8,11 @@ import { asyncHandler } from "../../middleware/errorHandler.js";
  * Retorna resumen para gráficos del dashboard
  */
 export const getSummary = asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  const summary = await dashboardService.getSummary(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const summary = await dashboardService.getSummary(companyId);
   sendSuccess(res, summary);
 });
 
@@ -18,8 +21,11 @@ export const getSummary = asyncHandler(async (req, res) => {
  * Retorna KPIs principales
  */
 export const getKPIs = asyncHandler(async (req, res) => {
-  const userId = req.user?.id;
-  const kpis = await dashboardService.getKPIs(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const kpis = await dashboardService.getKPIs(companyId);
   sendSuccess(res, kpis);
 });
 
@@ -28,9 +34,9 @@ export const getKPIs = asyncHandler(async (req, res) => {
  * NUEVO v0.0.4: Consolidar datos económicos por período SIN ejecutar cálculo
  * 
  * Query params:
- * - userId: ID del usuario/empresa
  * - month: Mes (1-12)
  * - year: Año
+ * companyId viene del JWT
  * 
  * Response:
  * {
@@ -44,27 +50,52 @@ export const getKPIs = asyncHandler(async (req, res) => {
  * }
  */
 export const getPeriodSummary = asyncHandler(async (req, res) => {
-  const { userId, month, year } = req.query;
+  console.log("[DASHBOARD.getPeriodSummary] START", {
+    authHeader: req.headers.authorization ? req.headers.authorization.substring(0, 20) : "MISSING",
+    userId: req.userId,
+    companyId: req.companyId,
+    role: req.role,
+    queryParams: req.query
+  });
+
+  const companyId = req.companyId;
+  const { month, year } = req.query;
+
+  if (!companyId) {
+    console.error("[DASHBOARD.getPeriodSummary] BLOCKED - companyId is null/undefined");
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
 
   // Validar parámetros requeridos
-  if (!userId || !month || !year) {
+  if (!month || !year) {
+    console.error("[DASHBOARD.getPeriodSummary] Missing query params", { month, year });
     return res.status(400).json({
       success: false,
-      error: "userId, month y year son requeridos"
+      error: "month y year son requeridos"
     });
   }
 
-const monthNum = Number(month);
-const yearNum = Number(year);
+  console.log("[DASHBOARD.getPeriodSummary] Parsing period", { month, year, monthType: typeof month, yearType: typeof year });
 
-if (!Number.isInteger(monthNum) || !Number.isInteger(yearNum)) {
-  throw new Error("Invalid parameters");
-}
+  const monthNum = parseInt(month, 10);
+  const yearNum = parseInt(year, 10);
+
+  if (!Number.isInteger(monthNum) || monthNum < 1 || monthNum > 12) {
+    console.error("[DASHBOARD.getPeriodSummary] Invalid month", { month, monthNum });
+    return sendError(res, 400, `month debe ser número 1-12, recibió: ${month}`);
+  }
+
+  if (!Number.isInteger(yearNum) || yearNum < 2000) {
+    console.error("[DASHBOARD.getPeriodSummary] Invalid year", { year, yearNum });
+    return sendError(res, 400, `year debe ser número >= 2000, recibió: ${year}`);
+  }
+
+  console.log("[DASHBOARD.getPeriodSummary] Querying consolidation service", { companyId, monthNum, yearNum });
 
 
   // Consolidar datos sin ejecutar el motor
   const consolidatedData = await dataConsolidationService.consolidateByPeriod(
-    userId,
+    companyId,
     monthNum,
     yearNum
   );

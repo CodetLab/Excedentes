@@ -1,14 +1,16 @@
 import extrasService from "../../services/extras.service.js";
 import { sendSuccess, sendError } from "../../utils/response.js";
 import { asyncHandler } from "../../middleware/errorHandler.js";
-import { getOrCreateUserId } from "../../utils/requestSanitizer.js";
 
 /**
  * GET /api/extras - Obtener todos los extras
  */
 export const getAll = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, {});
-  const extras = await extrasService.getAll(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const extras = await extrasService.getAll(companyId);
   sendSuccess(res, extras);
 });
 
@@ -24,8 +26,11 @@ export const getById = asyncHandler(async (req, res) => {
  * POST /api/extras - Crear un nuevo extra
  */
 export const create = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, req.body);
-  const extra = await extrasService.create(req.body, userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const extra = await extrasService.create(req.body, companyId);
   sendSuccess(res, extra, 201);
 });
 
@@ -49,7 +54,10 @@ export const remove = asyncHandler(async (req, res) => {
  * GET /api/extras/summary/totals - Obtener resumen de extras
  */
 export const getSummary = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, {});
-  const summary = await extrasService.getSummary(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const summary = await extrasService.getSummary(companyId);
   sendSuccess(res, summary);
 });

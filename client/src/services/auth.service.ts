@@ -2,6 +2,8 @@ export type AuthUser = {
   id: string;
   name?: string;
   email: string;
+  companyId?: string;  // 🔐 FASE 1: Multi-tenant support
+  role?: "admin" | "company";  // 🔐 FASE 2: Identity roles
 };
 
 export type AuthResponse = {
@@ -38,6 +40,7 @@ export const registerRequest = async (payload: {
   name?: string;
   email: string;
   password: string;
+  companyName?: string;
 }): Promise<AuthResponse> =>
   request<AuthResponse>("/api/auth/register", payload);
 

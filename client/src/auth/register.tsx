@@ -8,6 +8,7 @@ export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState("");
+  const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -23,10 +24,15 @@ export default function Register() {
       return;
     }
 
+    if (!companyName.trim()) {
+      setError("El nombre de la empresa es requerido");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      await register({ name, email, password });
+      await register({ name, email, password, companyName });
       navigate("/dashboard", { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al registrarse");
@@ -48,6 +54,14 @@ export default function Register() {
             autoComplete="name"
             value={name}
             onChange={(event) => setName(event.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Nombre de tu empresa"
+            autoComplete="organization"
+            value={companyName}
+            onChange={(event) => setCompanyName(event.target.value)}
+            required
           />
           <input
             type="email"

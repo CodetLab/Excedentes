@@ -35,24 +35,34 @@ import { asyncHandler } from "../../middleware/errorHandler.js";
  * - NotFoundError: No hay datos para el período
  */
 export const calculate = asyncHandler(async (req, res) => {
-  const { userId, month, year } = req.body;
+  const { month, year } = req.body;
   
+  // 🔐 FASE 5: Extraer identidad del JWT, no del body
+  const userId = req.userId;
+  const companyId = req.companyId;
+
   // Validar campos requeridos
-  if (!userId) {
-    return res.status(400).json({
-      success: false,
-      error: "userId es requerido"
-    });
-  }
-  
   if (!month || !year) {
     return res.status(400).json({
       success: false,
-      error: "month y year son requeridos"
+      error: "month y year son requeridos",
+      timestamp: new Date().toISOString(),
     });
   }
 
-  const result = await calculationService.calculateByPeriod(userId, month, year);
+  if (!companyId) {
+    return res.status(403).json({
+      success: false,
+      error: "Usuario no asignado a ninguna empresa",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  const result = await calculationService.calculateByPeriod(
+    companyId,  // Usar companyId como identificador principal
+    month, 
+    year
+  );
   sendSuccess(res, result);
 });
 
@@ -68,10 +78,26 @@ export const calculateDirect = asyncHandler(async (req, res) => {
 /**
  * POST /calculate/period/:periodId
  * Calcular usando datos de un período guardado
+ * 🔐 FASE 5: Valida que el período pertenece a la empresa del usuario
  */
 export const calculateForPeriod = asyncHandler(async (req, res) => {
   const { periodId } = req.params;
-  const result = await calculationService.calculateForPeriod(periodId);
+  const companyId = req.companyId;
+  const userRole = req.role;
+
+  if (!companyId) {
+    return res.status(403).json({
+      success: false,
+      error: "Usuario no asignado a ninguna empresa",
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  const result = await calculationService.calculateForPeriod(
+    periodId,
+    companyId,
+    userRole
+  );
   sendSuccess(res, result);
 });
 

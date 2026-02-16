@@ -1,14 +1,16 @@
 import gananciasService from "../../services/ganancias.service.js";
-import { sendSuccess } from "../../utils/response.js";
+import { sendSuccess, sendError } from "../../utils/response.js";
 import { asyncHandler } from "../../middleware/errorHandler.js";
-import { getOrCreateUserId } from "../../utils/requestSanitizer.js";
 
 /**
  * GET /api/ganancias - Obtener ganancias del usuario
  */
 export const get = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, {});
-  const ganancias = await gananciasService.get(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const ganancias = await gananciasService.get(companyId);
   sendSuccess(res, ganancias);
 });
 
@@ -16,8 +18,11 @@ export const get = asyncHandler(async (req, res) => {
  * POST /api/ganancias - Crear o actualizar ganancias
  */
 export const createOrUpdate = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, req.body);
-  const ganancias = await gananciasService.createOrUpdate(req.body, userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const ganancias = await gananciasService.createOrUpdate(req.body, companyId);
   sendSuccess(res, ganancias, 201);
 });
 
@@ -25,8 +30,11 @@ export const createOrUpdate = asyncHandler(async (req, res) => {
  * DELETE /api/ganancias - Eliminar ganancias
  */
 export const remove = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, {});
-  const result = await gananciasService.delete(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const result = await gananciasService.delete(companyId);
   sendSuccess(res, result);
 });
 
@@ -34,7 +42,10 @@ export const remove = asyncHandler(async (req, res) => {
  * GET /api/ganancias/total - Obtener total de ganancias
  */
 export const getTotal = asyncHandler(async (req, res) => {
-  const userId = getOrCreateUserId(req, {});
-  const total = await gananciasService.getTotal(userId);
+  const companyId = req.companyId;
+  if (!companyId) {
+    return sendError(res, 403, "Acceso denegado: companyId requerido");
+  }
+  const total = await gananciasService.getTotal(companyId);
   sendSuccess(res, { total });
 });

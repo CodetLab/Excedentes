@@ -8,7 +8,11 @@ import response from "../../utils/responseHelper.js";
 
 export const getCostos = async (req, res) => {
   try {
-    const costos = await getCostosService();
+    const companyId = req.companyId;
+    if (!companyId) {
+      return response.error(res, "Acceso denegado: companyId requerido", 403);
+    }
+    const costos = await getCostosService(companyId);
     return response.success(res, costos);
   } catch (error) {
     return response.serverError(res, error);
@@ -17,7 +21,11 @@ export const getCostos = async (req, res) => {
 
 export const createCosto = async (req, res) => {
   try {
-    const nuevoCosto = await createCostoService(req.body);
+    const companyId = req.companyId;
+    if (!companyId) {
+      return response.error(res, "Acceso denegado: companyId requerido", 403);
+    }
+    const nuevoCosto = await createCostoService(req.body, companyId);
     return response.created(res, nuevoCosto);
   } catch (error) {
     if (error.name === "ValidationError") {

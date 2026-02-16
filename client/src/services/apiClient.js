@@ -8,10 +8,19 @@ const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers = config.headers || {};
-    config.headers.Authorization = `Bearer ${token}`;
+  // Lee el token del localStorage en la estructura correcta
+  try {
+    const authData = localStorage.getItem("excedentes_auth");
+    if (authData) {
+      const parsed = JSON.parse(authData);
+      const token = parsed.token;
+      if (token) {
+        config.headers = config.headers || {};
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+  } catch (error) {
+    console.warn("Error reading auth token:", error);
   }
 
   return config;

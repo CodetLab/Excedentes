@@ -1,0 +1,192 @@
+/* CalculationDashboard.module.css */
+
+.dashboard {
+  padding: 2rem;
+  background: #fafafa;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.875rem;
+  color: #1a1a1a;
+}
+
+.backButton {
+  padding: 0.5rem 1rem;
+  background: white;
+  border: 1px solid #d0d0d0;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.backButton:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.chartsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.chartContainer {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.chartContainer h2 {
+  margin: 0 0 1.5rem;
+  font-size: 1.25rem;
+  color: #333;
+}
+
+.details {
+  margin: 2rem 0;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.details h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.detailCard {
+  padding: 1.25rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+}
+
+.detailCard h3 {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  color: #333;
+}
+
+.detailCard dl {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detailCard dt {
+  font-weight: 600;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.detailCard dd {
+  margin: 0 0 0 1rem;
+  color: #333;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.detailCard dd.positive {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.detailCard dd.negative {
+  color: #d32f2f;
+  font-weight: bold;
+}
+
+.interpretation {
+  margin-top: 2rem;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.interpretation h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.interpretationBox {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-radius: 6px;
+  border-left: 4px solid #2196f3;
+}
+
+.interpretationBox p {
+  margin: 0 0 1rem;
+  color: #333;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.interpretationBox p:last-child {
+  margin-bottom: 0;
+}
+
+.interpretationBox strong {
+  color: #1976d2;
+}
+
+@media (max-width: 800px) {
+  .dashboard {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header h1 {
+    font-size: 1.5rem;
+  }
+
+  .chartsGrid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .detailsGrid {
+    grid-template-columns: 1fr;
+  }
+}

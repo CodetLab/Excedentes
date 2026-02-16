@@ -69,18 +69,18 @@ class CapitalRepository {
   /**
    * Obtener items por tipo
    */
-  async findByTipo(tipo, userId = null) {
+  async findByTipo(tipo, companyId = null) {
     const filters = { tipo };
-    if (userId) filters.userId = userId;
+    if (companyId) filters.companyId = companyId;
     return this.find(filters);
   }
 
   /**
    * Obtener items activos por tipo
    */
-  async findActiveByTipo(tipo, userId = null) {
+  async findActiveByTipo(tipo, companyId = null) {
     const filters = { tipo, activo: true };
-    if (userId) filters.userId = userId;
+    if (companyId) filters.companyId = companyId;
     return this.find(filters);
   }
 }

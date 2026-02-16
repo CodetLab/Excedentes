@@ -4,7 +4,17 @@ import mongoose from "mongoose";
 // Cada tipo tiene campos específicos según las planillas de Nestor
 const CapitalSchema = new mongoose.Schema(
   {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    // 🔐 FASE 1: Multi-tenant support
+    companyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      // Mantener para compatibilidad backward
+    },
     tipo: {
       type: String,
       enum: [
@@ -59,8 +69,9 @@ const CapitalSchema = new mongoose.Schema(
   }
 );
 
-// Índices para búsquedas eficientes
-CapitalSchema.index({ userId: 1, tipo: 1 });
+// Índices para búsquedas eficientes - multi-tenant
+CapitalSchema.index({ companyId: 1, tipo: 1 });
+CapitalSchema.index({ userId: 1, tipo: 1 }); // Mantener para compatibilidad
 CapitalSchema.index({ tipo: 1 });
 
 export default mongoose.model("Capital", CapitalSchema);

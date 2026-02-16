@@ -6,7 +6,10 @@ import dashboardService from "../../services/dashboard.service";
 import type { PeriodSummary } from "../../services/dashboard.service";
 import type { CalculateResult } from "../../services/apiTypes";
 import { useAuth } from "../../context/AuthContext";
-import { safeCurrency, safeDate } from "../../utils/formatters";
+import { safeCurrency } from "../../utils/formatters";
+import { validateEconomicPreconditions } from "../../utils/validators";
+import type { ValidationResult } from "../../utils/validators";
+import CalculationResults from "./components/CalculationResults";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -15,7 +18,8 @@ const Dashboard = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   
   const [periodSummary, setPeriodSummary] = useState<PeriodSummary | null>(null);
-  const [result, setResult] = useState<CalculateResult | null>(null);
+  const [economicSnapshot, setEconomicSnapshot] = useState<CalculateResult | null>(null);
+  const [validation, setValidation] = useState<ValidationResult | null>(null);
   
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [loadingCalculation, setLoadingCalculation] = useState(false);
@@ -23,16 +27,19 @@ const Dashboard = () => {
 
   // Cargar resumen del período
   const loadPeriodSummary = async () => {
-    if (!user?.id) return;
-
     setLoadingSummary(true);
     setError(null);
     setPeriodSummary(null);
-    setResult(null);
+    setEconomicSnapshot(null); // 🔒 Resetear snapshot cuando cambia período
+    setValidation(null);
 
     try {
-      const summary = await dashboardService.getPeriodSummary(user.id, month, year);
+      const summary = await dashboardService.getPeriodSummary(month, year);
       setPeriodSummary(summary);
+      
+      // Validar precondiciones automáticamente
+      const validationResult = validateEconomicPreconditions(summary);
+      setValidation(validationResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error cargando datos del período");
       setPeriodSummary(null);
@@ -41,19 +48,19 @@ const Dashboard = () => {
     }
   };
 
-  // Ejecutar cálculo económico
+  // Ejecutar cálculo económico (solo si pasa validación)
   const runCalculation = async () => {
-    if (!user?.id || !periodSummary) return;
+    if (!periodSummary || !validation?.valid) return;
 
     setLoadingCalculation(true);
     setError(null);
 
     try {
-      const calcResult = await calculationService.calculateByPeriod(user.id, month, year);
-      setResult(calcResult);
+      const calcResult = await calculationService.calculateByPeriod(month, year);
+      setEconomicSnapshot(calcResult); // 🔒 Guardar snapshot congelado
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error ejecutando cálculo");
-      setResult(null);
+      setEconomicSnapshot(null);
     } finally {
       setLoadingCalculation(false);
     }
@@ -62,10 +69,7 @@ const Dashboard = () => {
   // Auto-cargar al cambiar período
   useEffect(() => {
     loadPeriodSummary();
-  }, [month, year, user?.id]);
-
-  const hasData = periodSummary && periodSummary.sales > 0;
-  const economicStatus = result?.auditTrail?.status || "UNKNOWN";
+  }, [month, year]);
 
   return (
     <div className="dashboard">
@@ -169,24 +173,46 @@ const Dashboard = () => {
                 </small>
               </div>
 
-              {hasData && (
+              {/* Mensajes de validación */}
+              {validation && !validation.valid && (
+                <div className="validation-issues">
+                  <div className="validation-header">
+                    <span className="validation-icon">⚠️</span>
+                    <span className="validation-title">Datos incompletos</span>
+                  </div>
+                  <ul className="validation-list">
+                    {validation.blockingIssues.map((issue, idx) => (
+                      <li key={idx} className="blocking-issue">{issue}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {validation && validation.valid && validation.warnings.length > 0 && (
+                <div className="validation-warnings">
+                  <div className="validation-header">
+                    <span className="validation-icon">ℹ️</span>
+                    <span className="validation-title">Advertencias</span>
+                  </div>
+                  <ul className="validation-list">
+                    {validation.warnings.map((warning, idx) => (
+                      <li key={idx} className="warning-issue">{warning}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Botón de cálculo (habilitado solo si validación pasó) */}
+              {validation && (
                 <div className="calculate-action">
                   <Button 
                     onClick={runCalculation} 
                     isLoading={loadingCalculation}
                     variant="primary"
+                    disabled={!validation.valid}
                   >
-                    Ejecutar Cálculo Económico
+                    {validation.valid ? "Ejecutar Cálculo Económico" : "Complete los datos para calcular"}
                   </Button>
-                </div>
-              )}
-
-              {!hasData && (
-                <div className="empty-state">
-                  <p>⚠️ Datos incompletos para calcular</p>
-                  <p className="text-muted">
-                    Debe cargar al menos ventas para el período seleccionado.
-                  </p>
                 </div>
               )}
             </>
@@ -199,112 +225,15 @@ const Dashboard = () => {
           )}
         </Card>
 
-        {/* Resultados del cálculo */}
-        {result && (
-          <div className="results-section">
-            {/* Estado Económico */}
-            <Card className={`status-card status-${economicStatus.toLowerCase()}`}>
-              <div className="status-content">
-                <span className="status-label">Estado Económico</span>
-                <span className="status-value">
-                  {economicStatus === "PASS" ? "✅ EXCEDENTE" : "⚠️ DÉFICIT"}
-                </span>
-              </div>
-            </Card>
+        {/* Resultados del cálculo económico (snapshot congelado) */}
+        <CalculationResults 
+          snapshot={economicSnapshot}
+          isLoading={loadingCalculation}
+          hasError={!!error && !periodSummary}
+          errorMessage={error || undefined}
+        />
 
-            {/* KPIs principales */}
-            <div className="kpi-grid">
-              <Card className="kpi-card">
-                <div className="kpi-content">
-                  <span className="kpi-label">Punto de Equilibrio</span>
-                  <span className="kpi-value">
-                    {safeCurrency(result.breakEven ?? 0)}
-                  </span>
-                </div>
-              </Card>
-              <Card className="kpi-card">
-                <div className="kpi-content">
-                  <span className="kpi-label">Ingresos Totales</span>
-                  <span className="kpi-value">
-                    {safeCurrency(result.totalRevenue ?? 0)}
-                  </span>
-                </div>
-              </Card>
-              <Card className="kpi-card">
-                <div className="kpi-content">
-                  <span className="kpi-label">Excedente</span>
-                  <span className={`kpi-value ${(result.surplus ?? 0) >= 0 ? "positive" : "negative"}`}>
-                    {safeCurrency(result.surplus ?? 0)}
-                  </span>
-                </div>
-              </Card>
-            </div>
-
-            {/* Distribución */}
-            {result.distribution && (
-              <Card title="Distribución del Excedente">
-                <div className="distribution-grid">
-                  <div className="distribution-item">
-                    <div className="distribution-info">
-                      <span>Retorno Capital</span>
-                      <span>{safeCurrency(result.distribution.capitalReturn ?? 0)}</span>
-                      <span className="distribution-percent">
-                        ({((result.distribution.weightCapital ?? 0) * 100).toFixed(1)}%)
-                      </span>
-                    </div>
-                    <div className="distribution-bar">
-                      <div
-                        className="distribution-fill capital"
-                        style={{
-                          width: `${(result.distribution.weightCapital ?? 0) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="distribution-item">
-                    <div className="distribution-info">
-                      <span>Pool Trabajo</span>
-                      <span>{safeCurrency(result.distribution.laborSurplusPool ?? 0)}</span>
-                      <span className="distribution-percent">
-                        ({((result.distribution.weightLabor ?? 0) * 100).toFixed(1)}%)
-                      </span>
-                    </div>
-                    <div className="distribution-bar">
-                      <div
-                        className="distribution-fill labor"
-                        style={{
-                          width: `${(result.distribution.weightLabor ?? 0) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            )}
-
-            {/* Audit Trail */}
-            <Card title="Auditoría">
-              <div className="audit-info">
-                <div className="audit-row">
-                  <span>Estado:</span>
-                  <span className={`audit-status audit-${economicStatus.toLowerCase()}`}>
-                    {economicStatus}
-                  </span>
-                </div>
-                <div className="audit-row">
-                  <span>Calculado:</span>
-                  <span>{safeDate(result.auditTrail?.calculatedAt)}</span>
-                </div>
-                <div className="audit-row">
-                  <span>Período:</span>
-                  <span>{result.auditTrail?.periodName ?? "N/A"}</span>
-                </div>
-              </div>
-            </Card>
-          </div>
-        )}
-
-        {error && result === null && periodSummary && (
+        {error && economicSnapshot === null && periodSummary && (
           <Card className="error-card">
             <div className="error-message">
               <strong>Error:</strong> {error}
